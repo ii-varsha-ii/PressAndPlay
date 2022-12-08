@@ -1,0 +1,46 @@
+FROM golang:1.17.6-alpine3.14 AS build
+# hadolint ignore=DL3018
+RUN apk add --update --no-cache \
+    alpine-sdk \
+    bash \
+    gcc \
+    git \
+    libc-dev \
+    linux-headers \
+    openjdk8 \
+    openssl \
+    openssl-libs-static \
+    openssl-dev \
+    python3 \
+    util-linux
+
+WORKDIR /root
+
+#For golang applications
+RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
+
+RUN mkdir -p /opt/pressandplay/bin
+RUN mkdir -p /opt/pressandplay/etc
+
+ARG service
+
+COPY user          /go/src/github.com/adarshsrinivasan/PressAndPlay/$service
+COPY vendor        /go/src/github.com/adarshsrinivasan/PressAndPlay/vendor
+
+ENV GO111MODULE "auto"
+RUN go build -o /go/bin/$service -tags static,musl github.com/adarshsrinivasan/PressAndPlay/$service
+
+# Second stage of the build is creating a minimalistic container
+FROM alpine:3.14.3
+
+RUN rm -rf /var/cache/apk/*
+
+ARG service
+
+COPY --from=build /go/bin/* /opt/pressandplay/bin/
+WORKDIR /opt/pressandplay/bin
+EXPOSE 50000 50001
+ARG service
+ENV service "$service"
+CMD ["sh", "-c", "./$service"]
+
