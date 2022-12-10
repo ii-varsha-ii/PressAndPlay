@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+import "common.proto";
+
+option go_package = "github.com/adarshsrinivasan/PressAndPlay/libraries/proto";
+
+// Interface exported by the server.
+service Court {
+  // GetCourt - takes CourtModel with only id populated as input and returns complete CourtModel
+  rpc GetCourt(CourtModel) returns (CourtModel) {}
+}
+
+message Slot {
+  string slotId = 1;
+  int32 timeStartHHMM = 2;
+  int32 timeEndHHMM = 3;
+  bool booked = 4;
+}
+
+message CourtModel {
+  string id = 1;
+  string name = 2;
+  Address address = 3;
+  string location = 4;
+  float distance = 5;
+  string phone = 6;
+  float rating = 7;
+  int32 ratingCount = 8;
+  string managerId = 9;
+  repeated Slot availableSlots = 10;
+  string imageUploadUrl = 11;
+  string imageDownloadUrl = 12;
+  string sportType = 13;
+  bool verified = 14;
+}

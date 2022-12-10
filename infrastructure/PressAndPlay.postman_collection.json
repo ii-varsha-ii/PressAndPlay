@@ -1,0 +1,304 @@
+{
+	"info": {
+		"_postman_id": "5c9d7186-0be4-4e34-b22c-e389c4e2b8ce",
+		"name": "PressAndPlay",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3535804"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"<========== Request headers =========>\");",
+									"console.log(request.headers);",
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"userSessionId\", jsonData.token.base64);",
+									"postman.setEnvironmentVariable(\"userSessionExpires\", jsonData.token.expires);",
+									"postman.setEnvironmentVariable(\"userSessionEnterprise\", jsonData.enterprise.id.base64);",
+									"postman.setEnvironmentVariable(\"userSessionRole\", jsonData.role.id);",
+									"",
+									"if (responseCode.code === 200 ) {",
+									"    console.log(\"User Login Successful\");",
+									"}",
+									"//setTimeout(function(){}, environment.Wait); ",
+									"",
+									"console.log(\" <=================== ResponseBody =================== >\"+  responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{baseUrl}}/api/v1/",
+								"type": "text"
+							},
+							{
+								"key": "X-Request-Id",
+								"value": "{{userRequestToken}}",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{userCsrfToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Adarsh\",\n    \"lastName\": \"Srinivasan\",\n    \"dateOfBirth\": \"19960508\",\n    \"gender\": 1,\n    \"address\": {\n        \"address_line_1\": \"1855, Athens st.\",\n        \"address_line_2\": \"Apt 218\",\n        \"city\": \"Boulder\",\n        \"state\": \"Colorado\",\n        \"country\": \"United States of America\",\n        \"pincode\": \"80302\"\n    },\n    \"phone\": \"7206945683\",\n    \"role\": 0,\n    \"email\": \"adsr8793@colorado.edu\",\n    \"password\": \"verystrongpassword\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/user/create",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"<========== Request headers =========>\");",
+									"console.log(request.headers);",
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"userSessionId\", jsonData.token.base64);",
+									"postman.setEnvironmentVariable(\"userSessionExpires\", jsonData.token.expires);",
+									"postman.setEnvironmentVariable(\"userSessionEnterprise\", jsonData.enterprise.id.base64);",
+									"postman.setEnvironmentVariable(\"userSessionRole\", jsonData.role.id);",
+									"",
+									"if (responseCode.code === 200 ) {",
+									"    console.log(\"User Login Successful\");",
+									"}",
+									"//setTimeout(function(){}, environment.Wait); ",
+									"",
+									"console.log(\" <=================== ResponseBody =================== >\"+  responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{baseUrl}}/api/v1/",
+								"type": "text"
+							},
+							{
+								"key": "X-Request-Id",
+								"value": "{{userRequestToken}}",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{userCsrfToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Adarsh\",\n    \"lastName\": \"Srinivasan\",\n    \"dateOfBirth\": \"19960508\",\n    \"gender\": 1,\n    \"address\": {\n        \"address_line_1\": \"1855, Athens st.\",\n        \"address_line_2\": \"Apt 218\",\n        \"city\": \"Boulder\",\n        \"state\": \"Colorado\",\n        \"country\": \"United States of America\",\n        \"pincode\": \"80302\"\n    },\n    \"phone\": \"7206945683\",\n    \"role\": 0,\n    \"email\": \"adsr8793@colorado.edu\",\n    \"password\": \"verystrongpassword\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/user/create",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"<========== Request headers =========>\");",
+									"console.log(request.headers);",
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"userSessionId\", jsonData.token.base64);",
+									"postman.setEnvironmentVariable(\"userSessionExpires\", jsonData.token.expires);",
+									"postman.setEnvironmentVariable(\"userSessionEnterprise\", jsonData.enterprise.id.base64);",
+									"postman.setEnvironmentVariable(\"userSessionRole\", jsonData.role.id);",
+									"",
+									"if (responseCode.code === 200 ) {",
+									"    console.log(\"User Login Successful\");",
+									"}",
+									"//setTimeout(function(){}, environment.Wait); ",
+									"",
+									"console.log(\" <=================== ResponseBody =================== >\"+  responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{baseUrl}}/api/v1/",
+								"type": "text"
+							},
+							{
+								"key": "X-Request-Id",
+								"value": "{{userRequestToken}}",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{userCsrfToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{userSessionID}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Adarsh\",\n    \"lastName\": \"Srinivasan\",\n    \"dateOfBirth\": \"19960508\",\n    \"gender\": 1,\n    \"address\": {\n        \"address_line_1\": \"1855, Athens st.\",\n        \"address_line_2\": \"Apt 218\",\n        \"city\": \"Boulder\",\n        \"state\": \"Colorado\",\n        \"country\": \"United States of America\",\n        \"pincode\": \"80302\"\n    },\n    \"phone\": \"7206945683\",\n    \"role\": 0,\n    \"email\": \"adsr8793@colorado.edu\",\n    \"password\": \"verystrongpassword\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/user/{{lastUserID}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"{{lastUserID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User By ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"<========== Request headers =========>\");",
+									"console.log(request.headers);",
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"userSessionId\", jsonData.token.base64);",
+									"postman.setEnvironmentVariable(\"userSessionExpires\", jsonData.token.expires);",
+									"postman.setEnvironmentVariable(\"userSessionEnterprise\", jsonData.enterprise.id.base64);",
+									"postman.setEnvironmentVariable(\"userSessionRole\", jsonData.role.id);",
+									"",
+									"if (responseCode.code === 200 ) {",
+									"    console.log(\"User Login Successful\");",
+									"}",
+									"//setTimeout(function(){}, environment.Wait); ",
+									"",
+									"console.log(\" <=================== ResponseBody =================== >\"+  responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{baseUrl}}/api/v1/",
+								"type": "text"
+							},
+							{
+								"key": "X-Request-Id",
+								"value": "{{userRequestToken}}",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{userCsrfToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{userSessionID}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Adarsh\",\n    \"lastName\": \"Srinivasan\",\n    \"dateOfBirth\": \"19960508\",\n    \"gender\": 1,\n    \"address\": {\n        \"address_line_1\": \"1855, Athens st.\",\n        \"address_line_2\": \"Apt 218\",\n        \"city\": \"Boulder\",\n        \"state\": \"Colorado\",\n        \"country\": \"United States of America\",\n        \"pincode\": \"80302\"\n    },\n    \"phone\": \"7206945683\",\n    \"role\": 0,\n    \"email\": \"adsr8793@colorado.edu\",\n    \"password\": \"verystrongpassword\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/user/{{lastUserID}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"{{lastUserID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

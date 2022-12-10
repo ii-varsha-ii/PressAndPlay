@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "github.com/adarshsrinivasan/PressAndPlay/libraries/proto";
+
+
+message Address {
+  string addressLine1 = 1;
+  string addressLine2 = 2;
+  string city = 3;
+  string state = 4;
+  string country = 5;
+  string pincode = 6;
+}

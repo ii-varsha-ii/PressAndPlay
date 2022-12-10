@@ -9,16 +9,22 @@
 SERVICES := user \
 
 DOCKER_BUILD := DOCKER_BUILDKIT=1 docker build
+DOCKER_PUSH := DOCKER_BUILDKIT=1 docker push
 DOCKERUSER=adarshzededa
 
-$(SERVICES): Dockerfile.service
+$(SERVICES): gen-proto Dockerfile.service
 	@echo "Building $@ ..."
 	$(DOCKER_BUILD) --build-arg service=$@ -t $(DOCKERUSER)/pressandplay-$@:latest -f Dockerfile.service .
+	@echo "Pushing $@ ..."
+	$(DOCKER_PUSH) $(DOCKERUSER)/pressandplay-$@:latest
 	: $@: Succeeded
 
-proto:
+gen-proto:
 	@echo "Generating Proto..."
-	protoc --plugin=$(GOPATH)/bin/protoc-gen-go-grpc --go_out=user --go-grpc_out=user user/proto/user.proto
+	protoc --proto_path=$(GOPATH)/src/github.com/adarshsrinivasan/PressAndPlay/libraries/proto --plugin=$(GOPATH)/bin/protoc-gen-go-grpc --go_out=$(GOPATH)/src --go-grpc_out=$(GOPATH)/src common.proto
+	protoc --proto_path=$(GOPATH)/src/github.com/adarshsrinivasan/PressAndPlay/libraries/proto --plugin=$(GOPATH)/bin/protoc-gen-go-grpc --go_out=$(GOPATH)/src --go-grpc_out=$(GOPATH)/src user.proto
+	protoc --proto_path=$(GOPATH)/src/github.com/adarshsrinivasan/PressAndPlay/libraries/proto --plugin=$(GOPATH)/bin/protoc-gen-go-grpc --go_out=$(GOPATH)/src --go-grpc_out=$(GOPATH)/src court.proto
+	protoc --proto_path=$(GOPATH)/src/github.com/adarshsrinivasan/PressAndPlay/libraries/proto --plugin=$(GOPATH)/bin/protoc-gen-go-grpc --go_out=$(GOPATH)/src --go-grpc_out=$(GOPATH)/src events.proto
 	: $@: Succeeded
 
 help:
@@ -27,20 +33,7 @@ help:
 	@echo "      make"
 	@echo "      make all"
 	@echo "      make build"
-	@echo "debug: build all services in docker containers with debug enabled"
-	@echo "<target> : build the specific service"
-	@echo "      make gilas"
-	@echo "      make seine"
-	@echo "<target>-debug : build the specific service with debug enabled"
-	@echo "      make gilas-debug"
-	@echo "      make seine-debug"
-	@echo "run-<target> : build and run the specific service"
-	@echo "      make run-gilas"
-	@echo "      make run-seine"
-	@echo "all-in-one: build a container that has all services"
-	@echo "run-all-in-one: build and run container that has all services"
-	@echo "update-dependencies: scan all of our dependencies and raise a PR updating outdated dependencies"
-	@echo "		'GITHUB_TOKEN' environment variable must be set before running this command"
-	@echo "scan-dep-vulnerability: scan our golang dependencies to check for vulnerabilities"
-	@echo "yetus: run branch-level yetus tests"
-	@echo "gen-dep-report: generate a report of dependent third party modules"
+	@echo "<target> : build and push the specific service"
+	@echo "      make user"
+	@echo "      make court"
+	@echo "gen-proto: generate proto"

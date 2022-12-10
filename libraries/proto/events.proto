@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/adarshsrinivasan/PressAndPlay/libraries/proto";
+
+// Interface exported by the server.
+service Events {
+  // GetUser - takes UserModel with only id populated as input and returns complete UserModel
+  rpc GetEvents(EventModel) returns (EventResponse) {}
+}
+
+message EventResponse {
+  repeated EventModel eventModelList = 1;
+}
+
+message EventModel {
+  string id = 1;
+  string userId = 2;
+  string courtId = 3;
+  string slotId = 4;
+  int32 timeStartHHMM = 5;
+  int32 timeEndHHMM = 6;
+  bool read = 7;
+  google.protobuf.Timestamp createdAt = 8;
+}

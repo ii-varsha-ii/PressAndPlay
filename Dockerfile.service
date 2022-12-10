@@ -24,11 +24,12 @@ RUN mkdir -p /opt/pressandplay/etc
 
 ARG service
 
-COPY user          /go/src/github.com/adarshsrinivasan/PressAndPlay/$service
+COPY cmd/$service          /go/src/github.com/adarshsrinivasan/PressAndPlay/cmd/$service
+COPY libraries          /go/src/github.com/adarshsrinivasan/PressAndPlay/libraries
 COPY vendor        /go/src/github.com/adarshsrinivasan/PressAndPlay/vendor
 
 ENV GO111MODULE "auto"
-RUN go build -o /go/bin/$service -tags static,musl github.com/adarshsrinivasan/PressAndPlay/$service
+RUN go build -o /go/bin/$service -tags static,musl github.com/adarshsrinivasan/PressAndPlay/cmd/$service
 
 # Second stage of the build is creating a minimalistic container
 FROM alpine:3.14.3
