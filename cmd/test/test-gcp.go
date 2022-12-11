@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -86,7 +87,7 @@ func uploadFile(googleAccessId string, privateKey []byte, bucket string, object 
 }
 
 func uploadImage(privateKey []byte, bucket, googleAccessId, key string) {
-	signedURL := "https://storage.googleapis.com/pressandplay/d12e0fa6-7f57-45c1-bdc3-5f995a8dc92c?Expires=1670579440&GoogleAccessId=cloud-storage-object-sa%40final-dsc-project.iam.gserviceaccount.com&Signature=OErTesb2G55UE8I1BoxplgDemRYNLafvxYyUFXu73bzGaH2YtY8p%2Bb5AyzGNtbKf21aBQpHtZr8Z6BntpJlzDMXaruo8u%2FoIToJNUWlG3B6cLVed%2Bap5MlswLKUwX3stdx9F0emjm1asnXPtAzxwmNduybP6TfbRbrMRqi8eH72ZvJpw6FwWUzVNWMEBIIIZaGTOdmdPMeXMapnpSqnTlUGwTxex0N%2F67gqmr9P7LVJT5Hc0TnV%2FJcWY61KgzwrVkjpyUke7JrRr4G4Tbhr%2F7vUtW3RlTtYf0njgkA%2BQBdcpI2YJPeDLEpG2mJeUtA6I0DHkmyD8dQi3%2BOMAYo7mlQ%3D%3D"
+	signedURL := "https://storage.googleapis.com/pressandplay/f9ad34be-f459-4133-a4f0-d9545fce17e0?Expires=1670776204&GoogleAccessId=cloud-storage-object-sa%40final-dsc-project.iam.gserviceaccount.com&Signature=IDefwFZtG3txdfLlqQlN%2BrFyHtXa9QwvJzflh6Zih4mu23ia8CzECa3hDvZ82zvfl%2B%2Fftzpi37eC6BbtXqgwfu8tUk5TwdLeeT5woCifh6ZkzxnD%2Bz%2BRbeI8BCtmRsUbNiaNw1y0NxeM39Nb6XVoT%2BLn0G4Z6ktoTKGloIeC%2FV6%2BF5FGNrOWMI9B54CUqMDybCBxQeiBXfiHcP3d7IvTFEFOyJD5wVaMMyyJaUnDZJBYwDFCfhYhdTfb8MuHlTz8bZaeQWaGBv8We6pJcegIz%2BLu2tbpxiUW9y62Pd3QdXTrpl2UGBLvryzDdp6Z0yrEq6cIVdsDCxahsnC6p14DIA%3D%3D"
 	b, err := ioutil.ReadFile("resources/image.jpeg")
 	if err != nil {
 		log.Fatal(err)
@@ -105,32 +106,10 @@ func uploadImage(privateKey []byte, bucket, googleAccessId, key string) {
 	fmt.Println(resp)
 }
 
-func genSignedURL(privateKey []byte, bucket, googleAccessId, key string) (string, error) {
-
-	return storage.SignedURL(bucket, key, &storage.SignedURLOptions{
-		GoogleAccessID: googleAccessId,
-		Method:         "PUT",
-		Expires:        time.Now().Add(15 * time.Minute),
-		ContentType:    "image/png",
-		PrivateKey:     privateKey,
-	})
-}
-
 func main() {
-	//privateKey, _ := ioutil.ReadFile(PRIVATE_KEY)
-	//
-	////objectName := "image2.jpeg"
-	//key := uuid.New().String()
-	//uploadImage(privateKey, BUCKET_NAME, GOOGLE_ACCESS_ID, key)
-	newLayout := "1504"
-	t1, err := time.Parse(newLayout, "1330")
-	if err != nil {
-		log.Fatal(err)
-	}
-	t2, err := time.Parse(newLayout, time.Now().Format(newLayout))
-	if err != nil {
-		log.Fatal(err)
-	}
+	privateKey, _ := ioutil.ReadFile(PRIVATE_KEY)
 
-	fmt.Println(t1.Sub(t2).Hours())
+	//objectName := "image2.jpeg"
+	key := uuid.New().String()
+	uploadImage(privateKey, BUCKET_NAME, GOOGLE_ACCESS_ID, key)
 }

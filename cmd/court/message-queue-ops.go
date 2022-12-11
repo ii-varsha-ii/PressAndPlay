@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	KAFKA_HOST_ENV              = "KAFKA_HOST"
-	KAFKA_PORT_ENV              = "KAFKA_PORT"
-	KAFKA_USER_DELETE_TOPIC_ENV = "KAFKA_USER_DELETE_TOPIC"
-	KAFKA_RETRY_ENV             = "KAFKA_RETRY"
+	KAFKA_HOST_ENV               = "KAFKA_HOST"
+	KAFKA_PORT_ENV               = "KAFKA_PORT"
+	KAFKA_COURT_DELETE_TOPIC_ENV = "KAFKA_COURT_DELETE_TOPIC"
+	KAFKA_RETRY_ENV              = "KAFKA_RETRY"
 )
 
 var (
@@ -23,7 +23,7 @@ var (
 func newKafkaHandler() (sarama.SyncProducer, error) {
 	host := common.GetEnv(KAFKA_HOST_ENV, "localhost")
 	port := common.GetEnv(KAFKA_PORT_ENV, "9092")
-	topic = common.GetEnv(KAFKA_USER_DELETE_TOPIC_ENV, "court-deleted")
+	topic = common.GetEnv(KAFKA_COURT_DELETE_TOPIC_ENV, "court-deleted")
 	retry, _ := strconv.Atoi(common.GetEnv(KAFKA_RETRY_ENV, "5"))
 
 	config := sarama.NewConfig()

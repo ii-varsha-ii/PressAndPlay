@@ -1,1 +1,3 @@
 .idea/*
+resources/credentials.json
+resources/private-key.pem

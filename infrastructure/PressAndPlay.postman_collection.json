@@ -10,7 +10,7 @@
 			"name": "user",
 			"item": [
 				{
-					"name": "Create User",
+					"name": "Create Customer",
 					"event": [
 						{
 							"listen": "test",
@@ -61,12 +61,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"firstName\": \"Adarsh\",\n    \"lastName\": \"Srinivasan\",\n    \"dateOfBirth\": \"19960508\",\n    \"gender\": 1,\n    \"address\": {\n        \"address_line_1\": \"1855, Athens st.\",\n        \"address_line_2\": \"Apt 218\",\n        \"city\": \"Boulder\",\n        \"state\": \"Colorado\",\n        \"country\": \"United States of America\",\n        \"pincode\": \"80302\"\n    },\n    \"phone\": \"7206945683\",\n    \"role\": 0,\n    \"email\": \"adsr8793@colorado.edu\",\n    \"password\": \"verystrongpassword\"\n}"
+							"raw": "{\n    \"firstName\": \"Adarsh\",\n    \"lastName\": \"Srinivasan\",\n    \"dateOfBirth\": \"19960508\",\n    \"gender\": 1,\n    \"address\": {\n        \"address_line_1\": \"1855, Athens st.\",\n        \"address_line_2\": \"Apt 218\",\n        \"city\": \"Boulder\",\n        \"state\": \"Colorado\",\n        \"country\": \"United States of America\",\n        \"pincode\": \"80302\"\n    },\n    \"phone\": \"7206945683\",\n    \"role\": 0,\n    \"email\": \"adsrCustomer@colorado.edu\",\n    \"password\": \"verystrongpassword\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/v1/user/create",
+							"raw": "{{baseUserUrl}}/api/v1/user/create",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseUserUrl}}"
 							],
 							"path": [
 								"api",
@@ -79,7 +79,7 @@
 					"response": []
 				},
 				{
-					"name": "Login User",
+					"name": "Login Customer",
 					"event": [
 						{
 							"listen": "test",
@@ -88,10 +88,8 @@
 									"console.log(\"<========== Request headers =========>\");",
 									"console.log(request.headers);",
 									"var jsonData = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"userSessionId\", jsonData.token.base64);",
-									"postman.setEnvironmentVariable(\"userSessionExpires\", jsonData.token.expires);",
-									"postman.setEnvironmentVariable(\"userSessionEnterprise\", jsonData.enterprise.id.base64);",
-									"postman.setEnvironmentVariable(\"userSessionRole\", jsonData.role.id);",
+									"postman.setEnvironmentVariable(\"lastCustomerID\", jsonData.id);",
+									"postman.setEnvironmentVariable(\"lastCustomerSessionID\", postman.getResponseHeader(\"User-Session-Id\"));",
 									"",
 									"if (responseCode.code === 200 ) {",
 									"    console.log(\"User Login Successful\");",
@@ -130,25 +128,25 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"firstName\": \"Adarsh\",\n    \"lastName\": \"Srinivasan\",\n    \"dateOfBirth\": \"19960508\",\n    \"gender\": 1,\n    \"address\": {\n        \"address_line_1\": \"1855, Athens st.\",\n        \"address_line_2\": \"Apt 218\",\n        \"city\": \"Boulder\",\n        \"state\": \"Colorado\",\n        \"country\": \"United States of America\",\n        \"pincode\": \"80302\"\n    },\n    \"phone\": \"7206945683\",\n    \"role\": 0,\n    \"email\": \"adsr8793@colorado.edu\",\n    \"password\": \"verystrongpassword\"\n}"
+							"raw": "{\n    \"email\": \"adsrCustomer@colorado.edu\",\n    \"password\": \"verystrongpassword\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/v1/user/create",
+							"raw": "{{baseUserUrl}}/api/v1/user/login",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseUserUrl}}"
 							],
 							"path": [
 								"api",
 								"v1",
 								"user",
-								"create"
+								"login"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Get User By ID",
+					"name": "Get Customer By ID",
 					"event": [
 						{
 							"listen": "test",
@@ -157,10 +155,6 @@
 									"console.log(\"<========== Request headers =========>\");",
 									"console.log(request.headers);",
 									"var jsonData = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"userSessionId\", jsonData.token.base64);",
-									"postman.setEnvironmentVariable(\"userSessionExpires\", jsonData.token.expires);",
-									"postman.setEnvironmentVariable(\"userSessionEnterprise\", jsonData.enterprise.id.base64);",
-									"postman.setEnvironmentVariable(\"userSessionRole\", jsonData.role.id);",
 									"",
 									"if (responseCode.code === 200 ) {",
 									"    console.log(\"User Login Successful\");",
@@ -200,32 +194,32 @@
 								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "{{userSessionID}}",
+								"key": "User-Session-Id",
+								"value": "{{lastCustomerSessionID}}",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"firstName\": \"Adarsh\",\n    \"lastName\": \"Srinivasan\",\n    \"dateOfBirth\": \"19960508\",\n    \"gender\": 1,\n    \"address\": {\n        \"address_line_1\": \"1855, Athens st.\",\n        \"address_line_2\": \"Apt 218\",\n        \"city\": \"Boulder\",\n        \"state\": \"Colorado\",\n        \"country\": \"United States of America\",\n        \"pincode\": \"80302\"\n    },\n    \"phone\": \"7206945683\",\n    \"role\": 0,\n    \"email\": \"adsr8793@colorado.edu\",\n    \"password\": \"verystrongpassword\"\n}"
+							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/v1/user/{{lastUserID}}",
+							"raw": "{{baseUserUrl}}/api/v1/user/{{lastCustomerID}}",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseUserUrl}}"
 							],
 							"path": [
 								"api",
 								"v1",
 								"user",
-								"{{lastUserID}}"
+								"{{lastCustomerID}}"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Delete User By ID",
+					"name": "Delete Customer By ID",
 					"event": [
 						{
 							"listen": "test",
@@ -233,11 +227,6 @@
 								"exec": [
 									"console.log(\"<========== Request headers =========>\");",
 									"console.log(request.headers);",
-									"var jsonData = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"userSessionId\", jsonData.token.base64);",
-									"postman.setEnvironmentVariable(\"userSessionExpires\", jsonData.token.expires);",
-									"postman.setEnvironmentVariable(\"userSessionEnterprise\", jsonData.enterprise.id.base64);",
-									"postman.setEnvironmentVariable(\"userSessionRole\", jsonData.role.id);",
 									"",
 									"if (responseCode.code === 200 ) {",
 									"    console.log(\"User Login Successful\");",
@@ -274,25 +263,673 @@
 								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "{{userSessionID}}",
+								"key": "User-Session-Id",
+								"value": "{{lastCustomerSessionID}}",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"firstName\": \"Adarsh\",\n    \"lastName\": \"Srinivasan\",\n    \"dateOfBirth\": \"19960508\",\n    \"gender\": 1,\n    \"address\": {\n        \"address_line_1\": \"1855, Athens st.\",\n        \"address_line_2\": \"Apt 218\",\n        \"city\": \"Boulder\",\n        \"state\": \"Colorado\",\n        \"country\": \"United States of America\",\n        \"pincode\": \"80302\"\n    },\n    \"phone\": \"7206945683\",\n    \"role\": 0,\n    \"email\": \"adsr8793@colorado.edu\",\n    \"password\": \"verystrongpassword\"\n}"
+							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/v1/user/{{lastUserID}}",
+							"raw": "{{baseUserUrl}}/api/v1/user/{{lastCustomerID}}",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseUserUrl}}"
 							],
 							"path": [
 								"api",
 								"v1",
 								"user",
-								"{{lastUserID}}"
+								"{{lastCustomerID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"<========== Request headers =========>\");",
+									"console.log(request.headers);",
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"userSessionId\", jsonData.token.base64);",
+									"postman.setEnvironmentVariable(\"userSessionExpires\", jsonData.token.expires);",
+									"postman.setEnvironmentVariable(\"userSessionEnterprise\", jsonData.enterprise.id.base64);",
+									"postman.setEnvironmentVariable(\"userSessionRole\", jsonData.role.id);",
+									"",
+									"if (responseCode.code === 200 ) {",
+									"    console.log(\"User Login Successful\");",
+									"}",
+									"//setTimeout(function(){}, environment.Wait); ",
+									"",
+									"console.log(\" <=================== ResponseBody =================== >\"+  responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{baseUrl}}/api/v1/",
+								"type": "text"
+							},
+							{
+								"key": "X-Request-Id",
+								"value": "{{userRequestToken}}",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{userCsrfToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Adarsh\",\n    \"lastName\": \"Srinivasan\",\n    \"dateOfBirth\": \"19960508\",\n    \"gender\": 1,\n    \"address\": {\n        \"address_line_1\": \"1855, Athens st.\",\n        \"address_line_2\": \"Apt 218\",\n        \"city\": \"Boulder\",\n        \"state\": \"Colorado\",\n        \"country\": \"United States of America\",\n        \"pincode\": \"80302\"\n    },\n    \"phone\": \"7206945683\",\n    \"role\": 1,\n    \"email\": \"adsrManager@colorado.edu\",\n    \"password\": \"verystrongpassword\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUserUrl}}/api/v1/user/create",
+							"host": [
+								"{{baseUserUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"<========== Request headers =========>\");",
+									"console.log(request.headers);",
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"lastManagerID\", jsonData.id);",
+									"postman.setEnvironmentVariable(\"lastManagerSessionID\", postman.getResponseHeader(\"User-Session-Id\"));",
+									"",
+									"if (responseCode.code === 200 ) {",
+									"    console.log(\"User Login Successful\");",
+									"}",
+									"//setTimeout(function(){}, environment.Wait); ",
+									"",
+									"console.log(\" <=================== ResponseBody =================== >\"+  responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{baseUrl}}/api/v1/",
+								"type": "text"
+							},
+							{
+								"key": "X-Request-Id",
+								"value": "{{userRequestToken}}",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{userCsrfToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"adsrManager@colorado.edu\",\n    \"password\": \"verystrongpassword\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUserUrl}}/api/v1/user/login",
+							"host": [
+								"{{baseUserUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Manager By ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"<========== Request headers =========>\");",
+									"console.log(request.headers);",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (responseCode.code === 200 ) {",
+									"    console.log(\"User Login Successful\");",
+									"}",
+									"//setTimeout(function(){}, environment.Wait); ",
+									"",
+									"console.log(\" <=================== ResponseBody =================== >\"+  responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{baseUrl}}/api/v1/",
+								"type": "text"
+							},
+							{
+								"key": "X-Request-Id",
+								"value": "{{userRequestToken}}",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{userCsrfToken}}",
+								"type": "text"
+							},
+							{
+								"key": "User-Session-Id",
+								"value": "{{lastManagerSessionID}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseUserUrl}}/api/v1/user/{{lastManagerID}}",
+							"host": [
+								"{{baseUserUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"{{lastManagerID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Manager By ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"<========== Request headers =========>\");",
+									"console.log(request.headers);",
+									"",
+									"if (responseCode.code === 200 ) {",
+									"    console.log(\"User Login Successful\");",
+									"}",
+									"//setTimeout(function(){}, environment.Wait); ",
+									"",
+									"console.log(\" <=================== ResponseBody =================== >\"+  responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{baseUrl}}/api/v1/",
+								"type": "text"
+							},
+							{
+								"key": "X-Request-Id",
+								"value": "{{userRequestToken}}",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{userCsrfToken}}",
+								"type": "text"
+							},
+							{
+								"key": "User-Session-Id",
+								"value": "{{lastManagerSessionID}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseUserUrl}}/api/v1/user/{{lastManagerID}}",
+							"host": [
+								"{{baseUserUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"{{lastManagerID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "court",
+			"item": [
+				{
+					"name": "Create Court",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"<========== Request headers =========>\");",
+									"console.log(request.headers);",
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"lastCourtID\", jsonData.id);",
+									"",
+									"if (responseCode.code === 200 ) {",
+									"    console.log(\"User Login Successful\");",
+									"}",
+									"//setTimeout(function(){}, environment.Wait); ",
+									"",
+									"console.log(\" <=================== ResponseBody =================== >\"+  responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{baseUrl}}/api/v1/",
+								"type": "text"
+							},
+							{
+								"key": "X-Request-Id",
+								"value": "{{userRequestToken}}",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{userCsrfToken}}",
+								"type": "text"
+							},
+							{
+								"key": "User-Session-Id",
+								"value": "{{lastManagerSessionID}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{\n\t\"name\": \"Rec Center CU Boulder\",\n\t\"address\": {\n\t\t\"address_line_1\": \"1835 Pleasant St\",\n        \"address_line_2\": \"\",\n        \"city\": \"Boulder\",\n        \"state\": \"Colorado\",\n        \"country\": \"United States of America\",\n        \"pincode\": \"80302\"\n\t},\n\t\"location\": \"40.010340192644904, 230.26939123894536\",\n\t\"phone\": \"3034926880\",\n\t\"availableSlots\": [\n\t\t{\n\t\t\t\"slot_id\": \"1\",\n\t\t\t\"time_start_hhmm\": 1000,\n\t\t\t\"time_end_hhmm\": 1100,\n\t\t\t\"booked\": false\n\t\t},\n\t\t{\n\t\t\t\"slot_id\": \"2\",\n\t\t\t\"time_start_hhmm\": 1100,\n\t\t\t\"time_end_hhmm\": 1200,\n\t\t\t\"booked\": false\n\t\t},\n\t\t{\n\t\t\t\"slot_id\": \"3\",\n\t\t\t\"time_start_hhmm\": 1300,\n\t\t\t\"time_end_hhmm\": 1400,\n\t\t\t\"booked\": false\n\t\t},\n\t\t{\n\t\t\t\"slot_id\": \"4\",\n\t\t\t\"time_start_hhmm\": 1400,\n\t\t\t\"time_end_hhmm\": 1500,\n\t\t\t\"booked\": false\n\t\t}\n\t],\n\t\"sportType\": \"BasketBall\"\n}"
+						},
+						"url": {
+							"raw": "{{baseCourtUrl}}/api/v1/court/create",
+							"host": [
+								"{{baseCourtUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"court",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Courts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"<========== Request headers =========>\");",
+									"console.log(request.headers);",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (responseCode.code === 200 ) {",
+									"    console.log(\"User Login Successful\");",
+									"}",
+									"//setTimeout(function(){}, environment.Wait); ",
+									"",
+									"console.log(\" <=================== ResponseBody =================== >\"+  responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{baseUrl}}/api/v1/",
+								"type": "text"
+							},
+							{
+								"key": "X-Request-Id",
+								"value": "{{userRequestToken}}",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{userCsrfToken}}",
+								"type": "text"
+							},
+							{
+								"key": "User-Session-Id",
+								"value": "{{lastCustomerSessionID}}",
+								"type": "text"
+							},
+							{
+								"key": "location",
+								"value": "40.010340192644904, -105.26939123894535",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseCourtUrl}}/api/v1/court",
+							"host": [
+								"{{baseCourtUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"court"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Court By ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"<========== Request headers =========>\");",
+									"console.log(request.headers);",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (responseCode.code === 200 ) {",
+									"    console.log(\"User Login Successful\");",
+									"}",
+									"//setTimeout(function(){}, environment.Wait); ",
+									"",
+									"console.log(\" <=================== ResponseBody =================== >\"+  responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{baseUrl}}/api/v1/",
+								"type": "text"
+							},
+							{
+								"key": "X-Request-Id",
+								"value": "{{userRequestToken}}",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{userCsrfToken}}",
+								"type": "text"
+							},
+							{
+								"key": "User-Session-Id",
+								"value": "{{lastManagerSessionID}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseCourtUrl}}/api/v1/court/{{lastCourtID}}",
+							"host": [
+								"{{baseCourtUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"court",
+								"{{lastCourtID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bool Slot",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"<========== Request headers =========>\");",
+									"console.log(request.headers);",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (responseCode.code === 200 ) {",
+									"    console.log(\"User Login Successful\");",
+									"}",
+									"//setTimeout(function(){}, environment.Wait); ",
+									"",
+									"console.log(\" <=================== ResponseBody =================== >\"+  responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{baseUrl}}/api/v1/",
+								"type": "text"
+							},
+							{
+								"key": "X-Request-Id",
+								"value": "{{userRequestToken}}",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{userCsrfToken}}",
+								"type": "text"
+							},
+							{
+								"key": "User-Session-Id",
+								"value": "{{lastCustomerSessionID}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{\n\t\"name\": \"Rec Center CU Boulder\",\n\t\"address\": {\n\t\t\"address_line_1\": \"1835 Pleasant St\",\n        \"address_line_2\": \"\",\n        \"city\": \"Boulder\",\n        \"state\": \"Colorado\",\n        \"country\": \"United States of America\",\n        \"pincode\": \"80302\"\n\t},\n\t\"location\": \"40.010340192644904, 105.26939123894536\",\n\t\"phone\": \"3034926880\",\n\t\"availableSlots\": [\n\t\t{\n\t\t\t\"slot_id\": \"1\",\n\t\t\t\"time_start_hhmm\": 1000,\n\t\t\t\"time_end_hhmm\": 1100,\n\t\t\t\"booked\": false\n\t\t},\n\t\t{\n\t\t\t\"slot_id\": \"2\",\n\t\t\t\"time_start_hhmm\": 1100,\n\t\t\t\"time_end_hhmm\": 1200,\n\t\t\t\"booked\": false\n\t\t},\n\t\t{\n\t\t\t\"slot_id\": \"3\",\n\t\t\t\"time_start_hhmm\": 1300,\n\t\t\t\"time_end_hhmm\": 1400,\n\t\t\t\"booked\": false\n\t\t},\n\t\t{\n\t\t\t\"slot_id\": \"4\",\n\t\t\t\"time_start_hhmm\": 1400,\n\t\t\t\"time_end_hhmm\": 1500,\n\t\t\t\"booked\": false\n\t\t}\n\t],\n\t\"sportType\": \"BasketBall\"\n}"
+						},
+						"url": {
+							"raw": "{{baseCourtUrl}}/api/v1/court/{{lastCourtID}}/slot/4/book",
+							"host": [
+								"{{baseCourtUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"court",
+								"{{lastCourtID}}",
+								"slot",
+								"4",
+								"book"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rate Court",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"<========== Request headers =========>\");",
+									"console.log(request.headers);",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (responseCode.code === 200 ) {",
+									"    console.log(\"User Login Successful\");",
+									"}",
+									"//setTimeout(function(){}, environment.Wait); ",
+									"",
+									"console.log(\" <=================== ResponseBody =================== >\"+  responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{baseUrl}}/api/v1/",
+								"type": "text"
+							},
+							{
+								"key": "X-Request-Id",
+								"value": "{{userRequestToken}}",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{userCsrfToken}}",
+								"type": "text"
+							},
+							{
+								"key": "User-Session-Id",
+								"value": "{{lastCustomerSessionID}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{\n    \"rating\": 4\n}"
+						},
+						"url": {
+							"raw": "{{baseCourtUrl}}/api/v1/court/{{lastCourtID}}/rating",
+							"host": [
+								"{{baseCourtUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"court",
+								"{{lastCourtID}}",
+								"rating"
 							]
 						}
 					},

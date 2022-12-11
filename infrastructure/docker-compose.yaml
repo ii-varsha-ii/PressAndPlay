@@ -100,6 +100,44 @@ services:
       REDIS_DB: 0
       REDIS_DATA_EXPIRATION_IN_HRS: 5
 
+  court:
+    image: adarshzededa/pressandplay-court:latest
+    restart: always
+    ports:
+      - '50020:50000'
+      - '50021:50001'
+    depends_on:
+      - postgres
+      - kafka1
+      - redis
+    environment:
+#      GRPC_EVENT_CLIENT_HOST:
+#      GRPC_EVENT_CLIENT_PORT:
+      GRPC_USER_CLIENT_HOST: "user"
+      GRPC_USER_CLIENT_PORT: 50001
+      GRPC_SERVER_PORT: 50001
+      HTTP_SERVER_HOST: "0.0.0.0"
+      HTTP_SERVER_PORT: 50000
+      GCP_PRIVATE_KEY_PATH: "resources/private-key.pem"
+      GCP_BUCKET_NAME: "pressandplay"
+      GCP_ACCESS_ID: "cloud-storage-object-sa@final-dsc-project.iam.gserviceaccount.com"
+      GCP_IMAGE_URL_TEMPLATE: "https://storage.cloud.google.com/pressandplay/%s?authuser=6"
+      GCP_CREDENTIALS_PATH: "resources/credentials.json"
+      MONGO_HOST: "mongodb"
+      MONGO_PORT: "27017"
+      MONGO_USERNAME: "admin"
+      MONGO_PASSWORD: "admin"
+      MONGO_DB: "pressandplay"
+      KAFKA_HOST: "kafka1"
+      KAFKA_PORT: 9092
+      KAFKA_COURT_DELETE_TOPIC: "court-deleted"
+      KAFKA_RETRY: 5
+      REDIS_HOST: "redis"
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: "admin"
+      REDIS_DB: 0
+      REDIS_DATA_EXPIRATION_IN_HRS: 5
+
 # Add volumes definition to create volume mysql-data referenced above
 volumes:
   postgresql-data:

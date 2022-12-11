@@ -27,6 +27,7 @@ ARG service
 COPY cmd/$service          /go/src/github.com/adarshsrinivasan/PressAndPlay/cmd/$service
 COPY libraries          /go/src/github.com/adarshsrinivasan/PressAndPlay/libraries
 COPY vendor        /go/src/github.com/adarshsrinivasan/PressAndPlay/vendor
+COPY resources        /go/src/github.com/adarshsrinivasan/PressAndPlay/resources
 
 ENV GO111MODULE "auto"
 RUN go build -o /go/bin/$service -tags static,musl github.com/adarshsrinivasan/PressAndPlay/cmd/$service
@@ -39,6 +40,7 @@ RUN rm -rf /var/cache/apk/*
 ARG service
 
 COPY --from=build /go/bin/* /opt/pressandplay/bin/
+COPY --from=build /go/src/github.com/adarshsrinivasan/PressAndPlay/resources /opt/pressandplay/bin/resources
 WORKDIR /opt/pressandplay/bin
 EXPOSE 50000 50001
 ARG service
