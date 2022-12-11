@@ -139,6 +139,7 @@ func BookCourtByID(courtID, slotID, userID string) (CourtModel, int, error) {
 				if statusCode, err := courtModel.updateCourt(); err != nil {
 					return CourtModel{}, statusCode, err
 				}
+				notifySlotBookedEvent(userID, courtID, slotID)
 				return courtModel, http.StatusOK, nil
 			}
 		}

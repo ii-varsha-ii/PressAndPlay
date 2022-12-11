@@ -16,6 +16,10 @@ const (
 )
 
 func createCourtHandler(w http.ResponseWriter, r *http.Request) {
+	// Stop here if its Preflighted OPTIONS request
+	if r.Method == "OPTIONS" {
+		common.RespondWithStatusCode(w, http.StatusOK, nil)
+	}
 	if !validateSessionID(r.Header.Get("User-Session-Id")) {
 		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("getUserHandler: Invalid session. Please login again"))
 		return
@@ -42,6 +46,10 @@ func createCourtHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func listCourtHandler(w http.ResponseWriter, r *http.Request) {
+	// Stop here if its Preflighted OPTIONS request
+	if r.Method == "OPTIONS" {
+		common.RespondWithStatusCode(w, http.StatusOK, nil)
+	}
 	if r.Header.Get("User-Session-Id") != "" && !validateSessionID(r.Header.Get("User-Session-Id")) {
 		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("listCourtHandler: Invalid session. Please login again"))
 		return
@@ -58,6 +66,10 @@ func listCourtHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getCourtHandler(w http.ResponseWriter, r *http.Request) {
+	// Stop here if its Preflighted OPTIONS request
+	if r.Method == "OPTIONS" {
+		common.RespondWithStatusCode(w, http.StatusOK, nil)
+	}
 	if !validateSessionID(r.Header.Get("User-Session-Id")) {
 		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("getCourtHandler: Invalid session. Please login again"))
 		return
@@ -74,6 +86,10 @@ func getCourtHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteCourtHandler(w http.ResponseWriter, r *http.Request) {
+	// Stop here if its Preflighted OPTIONS request
+	if r.Method == "OPTIONS" {
+		common.RespondWithStatusCode(w, http.StatusOK, nil)
+	}
 	if !validateSessionID(r.Header.Get("User-Session-Id")) {
 		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("deleteCourtHandler: Invalid session. Please login again"))
 		return
@@ -90,6 +106,10 @@ func deleteCourtHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func rateCourtHandler(w http.ResponseWriter, r *http.Request) {
+	// Stop here if its Preflighted OPTIONS request
+	if r.Method == "OPTIONS" {
+		common.RespondWithStatusCode(w, http.StatusOK, nil)
+	}
 	if !validateSessionID(r.Header.Get("User-Session-Id")) {
 		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("rateCourtHandler: Invalid session. Please login again"))
 		return
@@ -116,6 +136,10 @@ func rateCourtHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func bookCourtHandler(w http.ResponseWriter, r *http.Request) {
+	// Stop here if its Preflighted OPTIONS request
+	if r.Method == "OPTIONS" {
+		common.RespondWithStatusCode(w, http.StatusOK, nil)
+	}
 	if !validateSessionID(r.Header.Get("User-Session-Id")) {
 		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("rateCourtHandler: Invalid session. Please login again"))
 		return
@@ -138,19 +162,19 @@ func bookCourtHandler(w http.ResponseWriter, r *http.Request) {
 func initializeMuxRoutes() {
 	httpRouter = mux.NewRouter()
 	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, "create"),
-		createCourtHandler).Methods("POST")
+		createCourtHandler).Methods("POST", "OPTIONS")
 	httpRouter.HandleFunc(fmt.Sprintf("%s", API_PREFIX),
-		listCourtHandler).Methods("GET")
+		listCourtHandler).Methods("GET", "OPTIONS")
 	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, fmt.Sprintf("{id:%s}", ID_URL_REGEX)),
-		getCourtHandler).Methods("GET")
+		getCourtHandler).Methods("GET", "OPTIONS")
 	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, fmt.Sprintf("{id:%s}", ID_URL_REGEX)),
-		deleteCourtHandler).Methods("DELETE")
+		deleteCourtHandler).Methods("DELETE", "OPTIONS")
 	httpRouter.HandleFunc(fmt.Sprintf("%s/%s/%s", API_PREFIX, fmt.Sprintf("{id:%s}", ID_URL_REGEX), "rating"),
-		rateCourtHandler).Methods("POST")
+		rateCourtHandler).Methods("POST", "OPTIONS")
 	httpRouter.HandleFunc(fmt.Sprintf("%s/%s/%s/%s/%s", API_PREFIX,
 		fmt.Sprintf("{court-id:%s}", ID_URL_REGEX),
 		"slot",
 		fmt.Sprintf("{slot-id:%s}", SLOT_ID_REGEX),
 		"book"),
-		bookCourtHandler).Methods("POST")
+		bookCourtHandler).Methods("POST", "OPTIONS")
 }

@@ -15,6 +15,10 @@ const (
 )
 
 func createUserHandler(w http.ResponseWriter, r *http.Request) {
+	// Stop here if its Preflighted OPTIONS request
+	if r.Method == "OPTIONS" {
+		common.RespondWithStatusCode(w, http.StatusOK, nil)
+	}
 	var user UserModel
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&user); err != nil {

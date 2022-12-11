@@ -15,6 +15,10 @@ const (
 )
 
 func createUserHandler(w http.ResponseWriter, r *http.Request) {
+	// Stop here if its Preflighted OPTIONS request
+	if r.Method == "OPTIONS" {
+		common.RespondWithStatusCode(w, http.StatusOK, nil)
+	}
 	var user UserModel
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&user); err != nil {
@@ -32,6 +36,10 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginUserHandler(w http.ResponseWriter, r *http.Request) {
+	// Stop here if its Preflighted OPTIONS request
+	if r.Method == "OPTIONS" {
+		common.RespondWithStatusCode(w, http.StatusOK, nil)
+	}
 	var user UserModel
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&user); err != nil {
@@ -49,6 +57,10 @@ func loginUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getUserHandler(w http.ResponseWriter, r *http.Request) {
+	// Stop here if its Preflighted OPTIONS request
+	if r.Method == "OPTIONS" {
+		common.RespondWithStatusCode(w, http.StatusOK, nil)
+	}
 	vars := mux.Vars(r)
 	if !validateSessionID(r.Header.Get("User-Session-Id")) {
 		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("getUserHandler: Invalid session. Please login again"))
@@ -65,6 +77,10 @@ func getUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	// Stop here if its Preflighted OPTIONS request
+	if r.Method == "OPTIONS" {
+		common.RespondWithStatusCode(w, http.StatusOK, nil)
+	}
 	vars := mux.Vars(r)
 	if !validateSessionID(r.Header.Get("User-Session-Id")) {
 		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("deleteUserHandler: Invalid session. Please login again"))
@@ -83,11 +99,11 @@ func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
 func initializeMuxRoutes() {
 	httpRouter = mux.NewRouter()
 	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, "create"),
-		createUserHandler).Methods("POST")
+		createUserHandler).Methods("POST", "OPTIONS")
 	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, "login"),
-		loginUserHandler).Methods("POST")
+		loginUserHandler).Methods("POST", "OPTIONS")
 	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, fmt.Sprintf("{id:%s}", ID_URL_REGEX)),
-		getUserHandler).Methods("GET")
+		getUserHandler).Methods("GET", "OPTIONS")
 	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, fmt.Sprintf("{id:%s}", ID_URL_REGEX)),
-		deleteUserHandler).Methods("DELETE")
+		deleteUserHandler).Methods("DELETE", "OPTIONS")
 }
