@@ -1,0 +1,33 @@
+apiVersion: apps/v1 #  for k8s versions before 1.9.0 use apps/v1beta2  and before 1.8.0 use extensions/v1beta1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:6.2-alpine
+        command: ["redis-server"]
+        args: ["--save", "20", "1", "--loglevel", "warning", "--requirepass", "admin"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 400Mi
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+          - name: "redis-data-dir"
+            mountPath: "/data"
+      volumes:
+        - name: "redis-data-dir"
+          persistentVolumeClaim:
+            claimName: "redis-volume-claim"
+---

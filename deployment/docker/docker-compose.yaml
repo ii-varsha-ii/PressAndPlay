@@ -88,7 +88,7 @@ services:
       POSTGRES_HOST: "postgres"
       POSTGRES_PORT: "5432"
       POSTGRES_USERNAME: "admin"
-      POSTGRES_PASSWORD_ENV: "admin"
+      POSTGRES_PASSWORD: "admin"
       POSTGRES_DB: "pressandplay"
       KAFKA_HOST: "kafka1"
       KAFKA_PORT: 9092

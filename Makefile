@@ -28,6 +28,77 @@ gen-proto:
 	protoc --proto_path=$(GOPATH)/src/github.com/adarshsrinivasan/PressAndPlay/libraries/proto --plugin=$(GOPATH)/bin/protoc-gen-go-grpc --go_out=$(GOPATH)/src --go-grpc_out=$(GOPATH)/src events.proto
 	: $@: Succeeded
 
+deploy-docker:
+	@echo "Deploying PressAndPlay on docker..."
+	cd deployment/docker && docker-compose up -d
+	: $@: Succeeded
+
+updeploy-docker:
+	@echo "Removing PressAndPlay from docker..."
+	cd deployment/docker && docker-compose down -v
+	: $@: Succeeded
+
+deploy-kubernetes:
+	@echo "Deploying PressAndPlay on kubernetes..."
+
+	kubectl apply -f deployment/kuberneter/mongo/mongo-persistent-volume.yaml
+	kubectl apply -f deployment/kuberneter/mongo/mongodb-deployment.yaml
+	kubectl apply -f deployment/kuberneter/mongo/mongodb-svc.yaml
+
+	kubectl apply -f deployment/kuberneter/postgres/postgres-persistent-volume.yaml
+	kubectl apply -f deployment/kuberneter/postgres/postgres-deployment.yaml
+	kubectl apply -f deployment/kuberneter/postgres/postgres-svc.yaml
+
+	kubectl apply -f deployment/kuberneter/redis/redis-persistent-volume.yaml
+	kubectl apply -f deployment/kuberneter/redis/redis-deployment.yaml
+	kubectl apply -f deployment/kuberneter/redis/redis-svc.yaml
+
+	kubectl apply -f deployment/kuberneter/kafka/zookeeper-deployment.yaml
+	kubectl apply -f deployment/kuberneter/kafka/zookeeper-svc.yaml
+	kubectl apply -f deployment/kuberneter/kafka/kafka-deployment.yaml
+	kubectl apply -f deployment/kuberneter/kafka/kafka-svc.yaml
+
+	sleep 60
+	kubectl apply -f deployment/kuberneter/user/user-deployment.yaml
+	kubectl apply -f deployment/kuberneter/user/user-svc.yaml
+
+	sleep 30
+	kubectl apply -f deployment/kuberneter/court/court-deployment.yaml
+	kubectl apply -f deployment/kuberneter/court/court-svc.yaml
+
+	kubectl apply -f deployment/kuberneter/pressandplay-ingress.yaml
+	: $@: Succeeded
+
+undeploy-kubernetes:
+	@echo "Deploying PressAndPlay on kubernetes..."
+
+	kubectl delete -f deployment/kuberneter/pressandplay-ingress.yaml
+
+	kubectl delete -f deployment/kuberneter/mongo/mongodb-svc.yaml
+	kubectl delete -f deployment/kuberneter/mongo/mongodb-deployment.yaml
+	kubectl delete -f deployment/kuberneter/mongo/mongo-persistent-volume.yaml
+
+	kubectl delete -f deployment/kuberneter/postgres/postgres-svc.yaml
+	kubectl delete -f deployment/kuberneter/postgres/postgres-deployment.yaml
+	kubectl delete -f deployment/kuberneter/postgres/postgres-persistent-volume.yaml
+
+	kubectl delete -f deployment/kuberneter/redis/redis-svc.yaml
+	kubectl delete -f deployment/kuberneter/redis/redis-deployment.yaml
+	kubectl delete -f deployment/kuberneter/redis/redis-persistent-volume.yaml
+
+	kubectl delete -f deployment/kuberneter/kafka/zookeeper-svc.yaml
+	kubectl delete -f deployment/kuberneter/kafka/zookeeper-deployment.yaml
+	kubectl delete -f deployment/kuberneter/kafka/kafka-svc.yaml
+	kubectl delete -f deployment/kuberneter/kafka/kafka-deployment.yaml
+
+	kubectl delete -f deployment/kuberneter/user/user-svc.yaml
+	kubectl delete -f deployment/kuberneter/user/user-deployment.yaml
+
+	kubectl delete -f deployment/kuberneter/court/court-svc.yaml
+	kubectl delete -f deployment/kuberneter/court/court-deployment.yaml
+
+	: $@: Succeeded
+
 help:
 	@echo "List of available targets:"
 	@echo "all: build all services in docker containers"
@@ -38,3 +109,6 @@ help:
 	@echo "      make user"
 	@echo "      make court"
 	@echo "gen-proto: generate proto"
+	@echo "deploy-docker: deploy PressAndPlay using Docker"
+	@echo "undeploy-docker: undeploy PressAndPlay from Docker"
+
