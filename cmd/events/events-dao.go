@@ -42,7 +42,7 @@ type EventsListModel struct {
 
 type EventsDBData struct {
 	schema.BaseModel `bun:"table:event_data,alias:events"`
-	Id               string            `json:"id" bun:"id"`
+	Id               string            `json:"id" bun:"id,pk"`
 	UserID           string            `json:"userId" bun:"userId"`
 	ManagerID        string            `json:"managerId" bun:"managerId"`
 	CourtID          string            `json:"courtId" bun:"courtId"`
@@ -106,27 +106,25 @@ func (event *EventsDBData) listByManagerID() ([]EventsDBData, int, error) {
 	if err := verifyDatabaseConnection(dbClient); err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Insert", EventsTableName, err)
 	}
-	// whereClause := []WhereClauseType{
-	// 	{
-	// 		ColumnName:   "managerId",
-	// 		RelationType: EQUAL,
-	// 		ColumnValue:  event.ManagerID,
-	// 	},
-	// }
-	// if event.Notified == false {
-	// 	whereClause = append(whereClause, WhereClauseType{
-	// 		ColumnName:   "notified",
-	// 		RelationType: EQUAL,
-	// 		ColumnValue:  false,
-	// 	})
-	// }
+	whereClause := []WhereClauseType{
+		{
+			ColumnName:   "managerId",
+			RelationType: EQUAL,
+			ColumnValue:  event.ManagerID,
+		},
+	}
+	if event.Notified == false {
+		whereClause = append(whereClause, WhereClauseType{
+			ColumnName:   "notified",
+			RelationType: EQUAL,
+			ColumnValue:  false,
+		})
+	}
 
-	//orderByClause := []string{"bookingTimestamp:desc"}
-	_, eventsList, _, statusCode, err := readUtil(nil, nil, nil, nil, nil, false)
+	_, eventsList, _, statusCode, err := readUtil(nil, whereClause, nil, nil, nil, false)
 	if err != nil {
 		return nil, statusCode, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Read", EventsTableName, err)
 	}
-	fmt.Print(eventsList)
 	return eventsList, http.StatusOK, nil
 }
 
@@ -138,10 +136,15 @@ func (event *EventsDBData) updateByID() (int, error) {
 	updateQuery := dbClient.NewUpdate().Model(event)
 	updateQuery = updateQuery.WherePK()
 	oldVersion := 0
-	prepareUpdateQuery(updateQuery, &oldVersion, event, true, true)
-	if _, err := updateQuery.Exec(context.TODO()); err != nil {
+	fmt.Println("updating event:", event)
+	prepareUpdateQuery(updateQuery, &oldVersion, event, false, true)
+	fmt.Println("updateQuery: ", updateQuery.String())
+	x, err := updateQuery.Exec(context.TODO())
+	fmt.Println("result: ", x)
+	if err != nil {
 		return http.StatusInternalServerError, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Update", EventsTableName, err)
 	}
+
 	return http.StatusOK, nil
 }
 
@@ -215,4 +218,19 @@ func validateEventModel(eventModel *EventsModel, create bool) error {
 		return fmt.Errorf("invalid EventModel. Start Time greater than End Time for slot %s", eventModel.SlotID)
 	}
 	return nil
+}
+
+func copyEventDBData(eventDBData1, eventDBData2 *EventsDBData) {
+	eventDBData1.Id = eventDBData2.Id
+	eventDBData1.UserID = eventDBData2.UserID
+	eventDBData1.CourtID = eventDBData2.CourtID
+	eventDBData1.ManagerID = eventDBData2.ManagerID
+	eventDBData1.SlotID = eventDBData2.SlotID
+	eventDBData1.BookingTimestamp = eventDBData2.BookingTimestamp
+	eventDBData1.TimeStartHHMM = eventDBData2.TimeStartHHMM
+	eventDBData1.TimeEndHHMM = eventDBData2.TimeEndHHMM
+	eventDBData1.Notified = eventDBData2.Notified
+	eventDBData1.Tags = eventDBData2.Tags
+	eventDBData1.CreatedAt = eventDBData2.CreatedAt
+	eventDBData1.UpdatedAt = eventDBData2.UpdatedAt
 }

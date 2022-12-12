@@ -361,6 +361,7 @@ func createWhereClause(whereClause []WhereClauseType) (string, []interface{}, er
 }
 
 func prepareUpdateQuery(q *bun.UpdateQuery, oldVersion *int, data interface{}, igVersionCheck, colListEmpty bool) { // nolint
+	fmt.Println("updateQuery-start: ", q.String())
 	v := reflect.ValueOf(data).Elem()
 	for i := 0; i < v.NumField(); i++ {
 		valueField := v.Field(i)
@@ -387,6 +388,7 @@ func prepareUpdateQuery(q *bun.UpdateQuery, oldVersion *int, data interface{}, i
 				}
 			}
 		}
+		fmt.Printf("updateQuery-%d: %s", i, q.String())
 	}
 }
 

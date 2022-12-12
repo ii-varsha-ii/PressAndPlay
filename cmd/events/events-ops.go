@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -74,7 +73,7 @@ func ListUnreadEvents(managerId string) ([]*EventsListModel, int, error) {
 	eventsModel := EventsModel{ManagerID: managerId, Notified: false}
 	eventsDBData := convertModelToDBData(eventsModel)
 	eventsDBDataList, statusCode, err := eventsDBData.listByManagerID()
-	fmt.Print("Events: ", eventsDBDataList)
+
 	if err != nil {
 		return []*EventsListModel{}, statusCode, err
 	}
@@ -83,8 +82,6 @@ func ListUnreadEvents(managerId string) ([]*EventsListModel, int, error) {
 		eventModel := convertDBDataToModel(event)
 		user, _ := getUserByID(eventModel.UserID)
 		court, _ := getCourtByID(eventModel.CourtID)
-		fmt.Print(user)
-		fmt.Print(court)
 		eventsResult = append(eventsResult, &EventsListModel{
 			Id:               event.Id,
 			UserFirstName:    user.FirstName,
@@ -96,9 +93,14 @@ func ListUnreadEvents(managerId string) ([]*EventsListModel, int, error) {
 			TimeEndHHMM:      event.TimeEndHHMM,
 			BookingTimestamp: event.BookingTimestamp,
 		})
-		fmt.Print(eventsResult)
-		event.Notified = true
-		event.updateByID()
+		eventDBData := EventsDBData{}
+		copyEventDBData(&eventDBData, &event)
+		eventDBData.Notified = true
+		eventDBData.updateByID()
+		//x, _, _ := eventsDBData.listByManagerID()
+		//fmt.Println(x)
 	}
+
+	//fmt.Print("Events: ", eventsDBDataList)
 	return eventsResult, http.StatusOK, nil
 }
