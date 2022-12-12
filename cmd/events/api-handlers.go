@@ -16,6 +16,9 @@ const (
 )
 
 func createEvent(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "OPTIONS" {
+		common.RespondWithStatusCode(w, http.StatusOK, nil)
+	}
 	if !validateSessionID(r.Header.Get("User-Session-Id")) {
 		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("createEventHandler: Invalid session. Please login again"))
 		return
@@ -37,6 +40,9 @@ func createEvent(w http.ResponseWriter, r *http.Request) {
 }
 
 func listUnreadEventsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "OPTIONS" {
+		common.RespondWithStatusCode(w, http.StatusOK, nil)
+	}
 	if !validateSessionID(r.Header.Get("User-Session-Id")) {
 		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("getUserHandler: Invalid session. Please login again"))
 		return
@@ -51,6 +57,9 @@ func listUnreadEventsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func getHistoryHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "OPTIONS" {
+		common.RespondWithStatusCode(w, http.StatusOK, nil)
+	}
 	if r.Header.Get("User-Session-Id") != "" && !validateSessionID(r.Header.Get("User-Session-Id")) {
 		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("getUserHandler: Invalid session. Please login again"))
 		return
@@ -71,9 +80,9 @@ func getHistoryHandler(w http.ResponseWriter, r *http.Request) {
 func initializeMuxRoutes() {
 	httpRouter = mux.NewRouter()
 	httpRouter.HandleFunc(fmt.Sprintf("%s", API_PREFIX),
-		getHistoryHandler).Methods("GET")
+		getHistoryHandler).Methods("GET", "OPTIONS")
 	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, "create"),
-		createEvent).Methods("POST")
+		createEvent).Methods("POST", "OPTIONS")
 	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, "notifications"),
-		listUnreadEventsHandler).Methods("GET")
+		listUnreadEventsHandler).Methods("GET", "OPTIONS")
 }

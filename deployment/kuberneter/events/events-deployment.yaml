@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: events
+spec:
+  selector:
+    matchLabels:
+      app: events
+  serviceName: "events"
+  replicas: 1
+  podManagementPolicy: OrderedReady
+  template:
+    metadata:
+      labels:
+        app: events # has to match .spec.selector.matchLabels
+    spec:
+      containers:
+        - name: events
+          image: adarshzededa/pressandplay-events:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 50000
+              name: http
+            - containerPort: 50001
+              name: grpc
+          env:
+            - name: GRPC_SERVER_PORT
+              value: "50001"
+            - name: GRPC_COURT_CLIENT_HOST
+              value: "court"
+            - name: GRPC_COURT_CLIENT_PORT
+              value: "50001"
+            - name: GRPC_USER_CLIENT_HOST
+              value: "user"
+            - name: GRPC_USER_CLIENT_PORT
+              value: "50001"
+            - name: HTTP_SERVER_HOST
+              value: "0.0.0.0"
+            - name: HTTP_SERVER_PORT
+              value: "50000"
+            - name: POSTGRES_HOST
+              value: "postgres"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_USERNAME
+              value: "admin"
+            - name: POSTGRES_PASSWORD
+              value: "admin"
+            - name: POSTGRES_DB
+              value: "pressandplay"
+            - name: KAFKA_HOST
+              value: "kafka-service"
+            - name: KAFKA_PORT
+              value: "9092"
+            - name: KAFKA_COURT_DELETE_TOPIC
+              value: "court-deleted"
+            - name: KAFKA_USER_DELETE_TOPIC
+              value: "user-deleted"
+            - name: KAFKA_SLOT_BOOKED_TOPIC
+              value: "slot-booked"
+            - name: KAFKA_RETRY
+              value: "5"
+            - name: REDIS_HOST
+              value: "redis"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              value: "admin"
+            - name: REDIS_DB
+              value: "0"
+            - name: REDIS_DATA_EXPIRATION_IN_HRS
+              value: "5"

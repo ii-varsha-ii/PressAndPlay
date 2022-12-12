@@ -29,3 +29,10 @@ spec:
             name: court
             port:
               number: 50000
+      - path: /events(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: court
+            port:
+              number: 50000

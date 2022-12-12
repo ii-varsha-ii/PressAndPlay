@@ -67,6 +67,10 @@ deploy-kubernetes:
 	kubectl apply -f deployment/kuberneter/court/court-deployment.yaml
 	kubectl apply -f deployment/kuberneter/court/court-svc.yaml
 
+	sleep 30
+	kubectl apply -f deployment/kuberneter/events/events-deployment.yaml
+	kubectl apply -f deployment/kuberneter/events/events-svc.yaml
+
 	kubectl apply -f deployment/kuberneter/pressandplay-ingress.yaml
 	: $@: Succeeded
 
@@ -97,6 +101,9 @@ undeploy-kubernetes:
 
 	kubectl delete -f deployment/kuberneter/court/court-svc.yaml
 	kubectl delete -f deployment/kuberneter/court/court-deployment.yaml
+
+	kubectl delete -f deployment/kuberneter/events/events-svc.yaml
+	kubectl delete -f deployment/kuberneter/events/events-deployment.yaml
 
 	: $@: Succeeded
 

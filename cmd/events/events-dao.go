@@ -31,7 +31,7 @@ type EventsModel struct {
 type EventsListModel struct {
 	Id               string    `json:"id" bun:"id"`
 	UserFirstName    string    `json:"userFirstName" bun:"userId"`
-	UserLastName     string    `json:"courtId" bun:"courtId"`
+	UserLastName     string    `json:"userLastName" bun:"userLastName"`
 	UserPhone        string    `json:"userContact" bun:"userContact"`
 	CourtName        string    `json:"courtName" bun:"courtName"`
 	SlotID           string    `json:"slotId" bun:"slotId"`
