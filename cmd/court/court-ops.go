@@ -9,7 +9,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func CreateCourt(courtModel CourtModel) (CourtModel, int, error) {
@@ -67,7 +66,7 @@ func GetCourtByID(courtID string) (CourtModel, int, error) {
 	if statusCode, err := courtModel.getByID(); err != nil {
 		return CourtModel{}, statusCode, err
 	}
-	getAvailableSlots(courtModel.AvailableSlots)
+	//getAvailableSlots(courtModel.AvailableSlots)
 	return courtModel, http.StatusOK, nil
 }
 
@@ -202,14 +201,19 @@ func calculateDistance(givenLocation string, courtLocation string) (float64, err
 
 func getAvailableSlots(slots Slots) int {
 	openSlots := 0
-	newLayout := "1504"
-	currentTime, _ := time.Parse(newLayout, time.Now().Format(newLayout))
+	//newLayout := "1504"
+	//currentTime, _ := time.Parse(newLayout, time.Now().Format(newLayout))
+	//for _, slot := range slots {
+	//	slotStartTime, _ := time.Parse(newLayout, strconv.Itoa(slot.TimeStartHHMM))
+	//	if currentTime.Sub(slotStartTime).Minutes() < 0 {
+	//		openSlots++
+	//	} else {
+	//		slot.Booked = true
+	//	}
+	//}
 	for _, slot := range slots {
-		slotStartTime, _ := time.Parse(newLayout, strconv.Itoa(slot.TimeStartHHMM))
-		if currentTime.Sub(slotStartTime).Minutes() < 0 {
+		if !slot.Booked {
 			openSlots++
-		} else {
-			slot.Booked = true
 		}
 	}
 	return openSlots

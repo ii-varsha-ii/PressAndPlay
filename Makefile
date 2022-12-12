@@ -16,8 +16,8 @@ DOCKERUSER=adarshzededa
 $(SERVICES): gen-proto Dockerfile.service
 	@echo "Building $@ ..."
 	$(DOCKER_BUILD) --build-arg service=$@ -t $(DOCKERUSER)/pressandplay-$@:latest -f Dockerfile.service .
-#	@echo "Pushing $@ ..."
-#	$(DOCKER_PUSH) $(DOCKERUSER)/pressandplay-$@:latest
+	@echo "Pushing $@ ..."
+	$(DOCKER_PUSH) $(DOCKERUSER)/pressandplay-$@:latest
 	: $@: Succeeded
 
 gen-proto:
