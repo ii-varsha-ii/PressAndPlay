@@ -42,68 +42,68 @@ undeploy-docker:
 deploy-kubernetes:
 	@echo "Deploying PressAndPlay on kubernetes..."
 
-	kubectl apply -f deployment/kuberneter/mongo/mongo-persistent-volume.yaml
-	kubectl apply -f deployment/kuberneter/mongo/mongodb-deployment.yaml
-	kubectl apply -f deployment/kuberneter/mongo/mongodb-svc.yaml
+	kubectl apply -f deployment/kubernetes/mongo/mongo-persistent-volume.yaml
+	kubectl apply -f deployment/kubernetes/mongo/mongodb-deployment.yaml
+	kubectl apply -f deployment/kubernetes/mongo/mongodb-svc.yaml
 
-	kubectl apply -f deployment/kuberneter/postgres/postgres-persistent-volume.yaml
-	kubectl apply -f deployment/kuberneter/postgres/postgres-deployment.yaml
-	kubectl apply -f deployment/kuberneter/postgres/postgres-svc.yaml
+	kubectl apply -f deployment/kubernetes/postgres/postgres-persistent-volume.yaml
+	kubectl apply -f deployment/kubernetes/postgres/postgres-deployment.yaml
+	kubectl apply -f deployment/kubernetes/postgres/postgres-svc.yaml
 
-	kubectl apply -f deployment/kuberneter/redis/redis-persistent-volume.yaml
-	kubectl apply -f deployment/kuberneter/redis/redis-deployment.yaml
-	kubectl apply -f deployment/kuberneter/redis/redis-svc.yaml
+	kubectl apply -f deployment/kubernetes/redis/redis-persistent-volume.yaml
+	kubectl apply -f deployment/kubernetes/redis/redis-deployment.yaml
+	kubectl apply -f deployment/kubernetes/redis/redis-svc.yaml
 
-	kubectl apply -f deployment/kuberneter/kafka/zookeeper-deployment.yaml
-	kubectl apply -f deployment/kuberneter/kafka/zookeeper-svc.yaml
-	kubectl apply -f deployment/kuberneter/kafka/kafka-deployment.yaml
-	kubectl apply -f deployment/kuberneter/kafka/kafka-svc.yaml
+	kubectl apply -f deployment/kubernetes/kafka/zookeeper-deployment.yaml
+	kubectl apply -f deployment/kubernetes/kafka/zookeeper-svc.yaml
+	kubectl apply -f deployment/kubernetes/kafka/kafka-deployment.yaml
+	kubectl apply -f deployment/kubernetes/kafka/kafka-svc.yaml
 
 	sleep 60
-	kubectl apply -f deployment/kuberneter/user/user-deployment.yaml
-	kubectl apply -f deployment/kuberneter/user/user-svc.yaml
+	kubectl apply -f deployment/kubernetes/user/user-deployment.yaml
+	kubectl apply -f deployment/kubernetes/user/user-svc.yaml
 
 	sleep 30
-	kubectl apply -f deployment/kuberneter/court/court-deployment.yaml
-	kubectl apply -f deployment/kuberneter/court/court-svc.yaml
+	kubectl apply -f deployment/kubernetes/court/court-deployment.yaml
+	kubectl apply -f deployment/kubernetes/court/court-svc.yaml
 
 	sleep 30
-	kubectl apply -f deployment/kuberneter/events/events-deployment.yaml
-	kubectl apply -f deployment/kuberneter/events/events-svc.yaml
+	kubectl apply -f deployment/kubernetes/events/events-deployment.yaml
+	kubectl apply -f deployment/kubernetes/events/events-svc.yaml
 
-	kubectl apply -f deployment/kuberneter/pressandplay-ingress.yaml
+	kubectl apply -f deployment/kubernetes/pressandplay-ingress.yaml
 	: $@: Succeeded
 
 undeploy-kubernetes:
 	@echo "Deploying PressAndPlay on kubernetes..."
 
-	kubectl delete -f deployment/kuberneter/pressandplay-ingress.yaml
+	kubectl delete -f deployment/kubernetes/pressandplay-ingress.yaml
 
-	kubectl delete -f deployment/kuberneter/mongo/mongodb-svc.yaml
-	kubectl delete -f deployment/kuberneter/mongo/mongodb-deployment.yaml
-	kubectl delete -f deployment/kuberneter/mongo/mongo-persistent-volume.yaml
+	kubectl delete -f deployment/kubernetes/mongo/mongodb-svc.yaml
+	kubectl delete -f deployment/kubernetes/mongo/mongodb-deployment.yaml
+	kubectl delete -f deployment/kubernetes/mongo/mongo-persistent-volume.yaml
 
-	kubectl delete -f deployment/kuberneter/postgres/postgres-svc.yaml
-	kubectl delete -f deployment/kuberneter/postgres/postgres-deployment.yaml
-	kubectl delete -f deployment/kuberneter/postgres/postgres-persistent-volume.yaml
+	kubectl delete -f deployment/kubernetes/postgres/postgres-svc.yaml
+	kubectl delete -f deployment/kubernetes/postgres/postgres-deployment.yaml
+	kubectl delete -f deployment/kubernetes/postgres/postgres-persistent-volume.yaml
 
-	kubectl delete -f deployment/kuberneter/redis/redis-svc.yaml
-	kubectl delete -f deployment/kuberneter/redis/redis-deployment.yaml
-	kubectl delete -f deployment/kuberneter/redis/redis-persistent-volume.yaml
+	kubectl delete -f deployment/kubernetes/redis/redis-svc.yaml
+	kubectl delete -f deployment/kubernetes/redis/redis-deployment.yaml
+	kubectl delete -f deployment/kubernetes/redis/redis-persistent-volume.yaml
 
-	kubectl delete -f deployment/kuberneter/kafka/zookeeper-svc.yaml
-	kubectl delete -f deployment/kuberneter/kafka/zookeeper-deployment.yaml
-	kubectl delete -f deployment/kuberneter/kafka/kafka-svc.yaml
-	kubectl delete -f deployment/kuberneter/kafka/kafka-deployment.yaml
+	kubectl delete -f deployment/kubernetes/kafka/zookeeper-svc.yaml
+	kubectl delete -f deployment/kubernetes/kafka/zookeeper-deployment.yaml
+	kubectl delete -f deployment/kubernetes/kafka/kafka-svc.yaml
+	kubectl delete -f deployment/kubernetes/kafka/kafka-deployment.yaml
 
-	kubectl delete -f deployment/kuberneter/user/user-svc.yaml
-	kubectl delete -f deployment/kuberneter/user/user-deployment.yaml
+	kubectl delete -f deployment/kubernetes/user/user-svc.yaml
+	kubectl delete -f deployment/kubernetes/user/user-deployment.yaml
 
-	kubectl delete -f deployment/kuberneter/court/court-svc.yaml
-	kubectl delete -f deployment/kuberneter/court/court-deployment.yaml
+	kubectl delete -f deployment/kubernetes/court/court-svc.yaml
+	kubectl delete -f deployment/kubernetes/court/court-deployment.yaml
 
-	kubectl delete -f deployment/kuberneter/events/events-svc.yaml
-	kubectl delete -f deployment/kuberneter/events/events-deployment.yaml
+	kubectl delete -f deployment/kubernetes/events/events-svc.yaml
+	kubectl delete -f deployment/kubernetes/events/events-deployment.yaml
 
 	: $@: Succeeded
 
