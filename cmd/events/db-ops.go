@@ -32,7 +32,7 @@ const (
 	DEFAULT_IDLE_TIMEOUTS  = -1  // never timeout/close an idle connection.
 	DEFAULT_LOG_SLOW_QUERY = 100 // log db queries slower than 100ms by default
 
-	SCHEMA_NAME    = "user_schema"
+	SCHEMA_NAME    = "events_schema"
 	INDEX_TYPE_GIN = "gin"
 )
 
@@ -145,16 +145,16 @@ func newPostgresClient() (*bun.DB, error) {
 	return db, db.Ping()
 }
 
-func createUserTable() error {
+func createEventsTable() error {
 	if dbClient == nil {
-		err := fmt.Errorf("exception while creating user table. database connection not created")
+		err := fmt.Errorf("exception while creating events table. database connection not created")
 		logrus.Errorf(err.Error())
 		return err
 	}
 
 	_, err := dbClient.ExecContext(context.TODO(), "CREATE SCHEMA IF NOT EXISTS ?", bun.Ident(SCHEMA_NAME))
 	if err != nil {
-		err := fmt.Errorf("exception while creating user schema %v. %v", SCHEMA_NAME, err)
+		err := fmt.Errorf("exception while creating events schema %v. %v", SCHEMA_NAME, err)
 		logrus.Errorf(err.Error())
 		return err
 	}
@@ -180,25 +180,11 @@ func createUserTable() error {
 
 	_, err = createTableQuery.Exec(context.TODO())
 	if err != nil {
-		err := fmt.Errorf("exception while creaiting user table. %v", err)
+		err := fmt.Errorf("exception while creaiting event table. %v", err)
 		logrus.Errorf(err.Error())
 		return err
 	}
 
-	// create indexes
-	emailIndex := IndexParams{
-		Name:        "idx_user_email",
-		Type:        INDEX_TYPE_GIN,
-		TableName:   EventsTableName,
-		ColumnNames: []string{"email"},
-	}
-	emailIndexCreateQuery := createIndexCreateQuery(emailIndex)
-	_, err = dbClient.ExecContext(context.TODO(), emailIndexCreateQuery)
-	if err != nil {
-		err := fmt.Errorf("exception while creaiting index in email column of user table. %v", err)
-		logrus.Errorf(err.Error())
-		return err
-	}
 	return nil
 }
 
@@ -267,7 +253,7 @@ func createWhereClause(whereClause []WhereClauseType) (string, []interface{}, er
 			fullColumnName = "?.?"
 			fullColumnNameValues = append(fullColumnNameValues, bun.Ident(val.TableAlias))
 		}
-		fullColumnNameValues = append(fullColumnNameValues, bun.Ident(strings.ToLower(val.ColumnName)))
+		fullColumnNameValues = append(fullColumnNameValues, bun.Ident(val.ColumnName))
 
 		switch strings.ToLower(relType) {
 		case "like":
@@ -439,7 +425,7 @@ func createOrderBy(orderByClause []string) (string, error) {
 				} else {
 					buffer.WriteString(", ")
 				}
-				buffer.WriteString(strings.TrimSpace(strings.ToLower(kv[0])))
+				buffer.WriteString(strings.TrimSpace(kv[0]))
 				buffer.WriteString(" ")
 				buffer.WriteString(strings.TrimSpace(kv[1]))
 			}
@@ -541,6 +527,5 @@ func readUtil(pagination *Cursor, whereClausefilters []WhereClauseType,
 		}
 		return singleUser, listUser, newPagination, http.StatusOK, nil
 	}
-
 	return singleUser, listUser, nil, http.StatusOK, nil
 }

@@ -35,12 +35,13 @@ var (
 	err                    error
 	ctx                    = context.Background()
 	messageQueueProducer   sarama.SyncProducer
+	messageQueueConsumer   sarama.Consumer
 	httpRouter             *mux.Router
 	gRPCServerPort, _      = strconv.Atoi(common.GetEnv(GRPC_SERVER_PORT_ENV, "50005"))
 	gRPCUserClientHost     = common.GetEnv(GRPC_USER_CLIENT_HOST_ENV, "localhost")
 	gRPCUserClientPort, _  = strconv.Atoi(common.GetEnv(GRPC_USER_CLIENT_PORT_ENV, "50011"))
 	gRPCCourtClientHost    = common.GetEnv(GRPC_COURT_CLIENT_HOST_ENV, "localhost")
-	gRPCCourtClientPort, _ = strconv.Atoi(common.GetEnv(GRPC_COURT_CLIENT_PORT_ENV, "50011"))
+	gRPCCourtClientPort, _ = strconv.Atoi(common.GetEnv(GRPC_COURT_CLIENT_PORT_ENV, "50021"))
 	httpServerHost         = common.GetEnv(HTTP_SERVER_HOST_ENV, "localhost")
 	httpServerPort, _      = strconv.Atoi(common.GetEnv(HTTP_SERVER_PORT_ENV, "50004"))
 	gRPCEventsClient       proto.EventsClient
@@ -53,7 +54,7 @@ func initializeDB() error {
 	if err != nil {
 		return fmt.Errorf("exception while initializing postgres client. %v", err)
 	}
-	if err := createUserTable(); err != nil {
+	if err := createEventsTable(); err != nil {
 		return fmt.Errorf("exception while creating user tabel. %v", err)
 	}
 	return nil
@@ -67,10 +68,14 @@ func initializeSessionHandler() error {
 	return nil
 }
 
-func initializeMessageQueueProducer() error {
-	messageQueueProducer, err = newKafkaHandler()
+func initializeMessageQueue() error {
+	messageQueueProducer, messageQueueConsumer, err = newKafkaHandler()
 	if err != nil {
 		return fmt.Errorf("exception while initializing kafka producer client. %v", err)
+	}
+	slotBookedTopic := common.GetEnv(KAFKA_SLOT_BOOKED_TOPIC_ENV, "slot-booked")
+	if err := initializeConsumers(slotBookedTopic, handleSlotBookedNotifications); err != nil {
+		return fmt.Errorf("exception while initializing kafka consumer for topic %s. %v", slotBookedTopic, err)
 	}
 	return nil
 }
@@ -117,7 +122,7 @@ func initializeGRPCCourtClient() error {
 		return fmt.Errorf("exception while initializing grpc client. %v", err)
 	}
 
-	gRPCUserClient = proto.NewUserClient(conn)
+	gRPCCourtClient = proto.NewCourtClient(conn)
 	return nil
 }
 
@@ -129,7 +134,7 @@ func initialize() error {
 	if err := initializeSessionHandler(); err != nil {
 		return fmt.Errorf("session handler initialization error. %v", err)
 	}
-	if err := initializeMessageQueueProducer(); err != nil {
+	if err := initializeMessageQueue(); err != nil {
 		return fmt.Errorf("message queue producer initialization error. %v", err)
 	}
 	if err := initializeHTTPRouter(); err != nil {

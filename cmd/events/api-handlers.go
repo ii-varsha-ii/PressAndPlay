@@ -72,7 +72,7 @@ func initializeMuxRoutes() {
 	httpRouter = mux.NewRouter()
 	httpRouter.HandleFunc(fmt.Sprintf("%s", API_PREFIX),
 		getHistoryHandler).Methods("GET")
-	httpRouter.HandleFunc(fmt.Sprintf("%s/create", API_PREFIX),
+	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, "create"),
 		createEvent).Methods("POST")
 	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, "notifications"),
 		listUnreadEventsHandler).Methods("GET")

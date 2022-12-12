@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func CreateEvent(eventsModel EventsModel) (EventsModel, int, error) {
@@ -10,6 +11,7 @@ func CreateEvent(eventsModel EventsModel) (EventsModel, int, error) {
 		return EventsModel{}, http.StatusBadRequest, err
 	}
 	eventsDBData := convertModelToDBData(eventsModel)
+	eventsDBData.BookingTimestamp = time.Now() // remove
 	court, err := getCourtByID(eventsModel.CourtID)
 	if err != nil {
 		return EventsModel{}, http.StatusInternalServerError, err
@@ -18,8 +20,6 @@ func CreateEvent(eventsModel EventsModel) (EventsModel, int, error) {
 		if slot.SlotId == eventsModel.SlotID && slot.Booked {
 			eventsDBData.TimeStartHHMM = int(slot.TimeStartHHMM)
 			eventsDBData.TimeEndHHMM = int(slot.TimeEndHHMM)
-		} else {
-			return EventsModel{}, http.StatusInternalServerError, fmt.Errorf("slot %s not found", eventsModel.SlotID)
 		}
 	}
 	if statusCode, err := eventsDBData.createEvent(); err != nil {
@@ -74,6 +74,7 @@ func ListUnreadEvents(managerId string) ([]*EventsListModel, int, error) {
 	eventsModel := EventsModel{ManagerID: managerId, Notified: false}
 	eventsDBData := convertModelToDBData(eventsModel)
 	eventsDBDataList, statusCode, err := eventsDBData.listByManagerID()
+	fmt.Print("Events: ", eventsDBDataList)
 	if err != nil {
 		return []*EventsListModel{}, statusCode, err
 	}
@@ -82,6 +83,8 @@ func ListUnreadEvents(managerId string) ([]*EventsListModel, int, error) {
 		eventModel := convertDBDataToModel(event)
 		user, _ := getUserByID(eventModel.UserID)
 		court, _ := getCourtByID(eventModel.CourtID)
+		fmt.Print(user)
+		fmt.Print(court)
 		eventsResult = append(eventsResult, &EventsListModel{
 			Id:               event.Id,
 			UserFirstName:    user.FirstName,
@@ -93,6 +96,7 @@ func ListUnreadEvents(managerId string) ([]*EventsListModel, int, error) {
 			TimeEndHHMM:      event.TimeEndHHMM,
 			BookingTimestamp: event.BookingTimestamp,
 		})
+		fmt.Print(eventsResult)
 		event.Notified = true
 		event.updateByID()
 	}

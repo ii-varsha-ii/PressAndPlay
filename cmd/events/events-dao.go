@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	EventsTableName = "user_data"
+	EventsTableName      = "event_data"
+	EventsTableAliasName = "events"
 )
 
 type EventsModel struct {
@@ -21,8 +22,8 @@ type EventsModel struct {
 	ManagerID        string    `json:"managerId" bun:"managerId"`
 	CourtID          string    `json:"courtId" bun:"courtId"`
 	SlotID           string    `json:"slotId" bun:"slotId"`
-	TimeStartHHMM    int       `json:"timeStartHHMM" bson:"timeStartHHMM"`
-	TimeEndHHMM      int       `json:"timeEndHHMM" bson:"timeEndHHMM"`
+	TimeStartHHMM    int       `json:"timeStartHHMM" bun:"time_start_hhmm"`
+	TimeEndHHMM      int       `json:"timeEndHHMM" bun:"time_end_hhmm"`
 	BookingTimestamp time.Time `json:"bookingTimestamp" bun:"bookingTimestamp"`
 	Notified         bool      `json:"notified" bun:"notified"`
 }
@@ -34,28 +35,27 @@ type EventsListModel struct {
 	UserPhone        string    `json:"userContact" bun:"userContact"`
 	CourtName        string    `json:"courtName" bun:"courtName"`
 	SlotID           string    `json:"slotId" bun:"slotId"`
-	TimeStartHHMM    int       `json:"timeStartHHMM" bson:"timeStartHHMM"`
-	TimeEndHHMM      int       `json:"timeEndHHMM" bson:"timeEndHHMM"`
+	TimeStartHHMM    int       `json:"timeStartHHMM" bun:"time_start_hhmm"`
+	TimeEndHHMM      int       `json:"timeEndHHMM" bun:"time_end_hhmm"`
 	BookingTimestamp time.Time `json:"bookingTimestamp" bun:"bookingTimestamp"`
 }
 
 type EventsDBData struct {
-	schema.BaseModel `bun:"table:events_data"`
+	schema.BaseModel `bun:"table:event_data,alias:events"`
 	Id               string            `json:"id" bun:"id"`
 	UserID           string            `json:"userId" bun:"userId"`
 	ManagerID        string            `json:"managerId" bun:"managerId"`
 	CourtID          string            `json:"courtId" bun:"courtId"`
 	SlotID           string            `json:"slotId" bun:"slotId"`
-	TimeStartHHMM    int               `json:"timeStartHHMM" bson:"timeStartHHMM"`
-	TimeEndHHMM      int               `json:"timeEndHHMM" bson:"timeEndHHMM"`
+	TimeStartHHMM    int               `json:"timeStartHHMM" bun:"time_start_hhmm"`
+	TimeEndHHMM      int               `json:"timeEndHHMM" bun:"time_end_hhmm"`
 	BookingTimestamp time.Time         `json:"bookingTimestamp" bun:"bookingTimestamp"`
 	Notified         bool              `json:"notified" bun:"notified"`
-	Tags             map[string]string `json:"tags" bson:"tags,omitempty"`
+	Tags             map[string]string `json:"tags" bun:"tags,omitempty"`
 	CreatedAt        time.Time         `json:"createdAt"  bun:"createdAt,omitempty"`
 	UpdatedAt        time.Time         `json:"updatedAt" bun:"updatedAt,omitempty"`
 }
-type EventResponse struct {
-}
+
 type EventsDBOps interface {
 	createEvent() (int, error)
 	listUnreadEvents() (int, error)
@@ -106,27 +106,27 @@ func (event *EventsDBData) listByManagerID() ([]EventsDBData, int, error) {
 	if err := verifyDatabaseConnection(dbClient); err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Insert", EventsTableName, err)
 	}
-	whereClause := []WhereClauseType{
-		{
-			ColumnName:   "managerId",
-			RelationType: EQUAL,
-			ColumnValue:  event.ManagerID,
-		},
-	}
-	if event.Notified == false {
-		whereClause = append(whereClause, WhereClauseType{
-			ColumnName:   "notified",
-			RelationType: EQUAL,
-			ColumnValue:  false,
-		})
-	}
+	// whereClause := []WhereClauseType{
+	// 	{
+	// 		ColumnName:   "managerId",
+	// 		RelationType: EQUAL,
+	// 		ColumnValue:  event.ManagerID,
+	// 	},
+	// }
+	// if event.Notified == false {
+	// 	whereClause = append(whereClause, WhereClauseType{
+	// 		ColumnName:   "notified",
+	// 		RelationType: EQUAL,
+	// 		ColumnValue:  false,
+	// 	})
+	// }
 
-	orderByClause := []string{"bookingTimestamp"}
-	_, eventsList, _, statusCode, err := readUtil(nil, whereClause, orderByClause, nil, nil, true)
+	//orderByClause := []string{"bookingTimestamp:desc"}
+	_, eventsList, _, statusCode, err := readUtil(nil, nil, nil, nil, nil, false)
 	if err != nil {
 		return nil, statusCode, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Read", EventsTableName, err)
 	}
-
+	fmt.Print(eventsList)
 	return eventsList, http.StatusOK, nil
 }
 
@@ -209,7 +209,6 @@ func validateEventModel(eventModel *EventsModel, create bool) error {
 	_, err = time.Parse(newLayout, strconv.Itoa(eventModel.TimeEndHHMM))
 	if err != nil {
 		return fmt.Errorf("invalid EventModel. exception while parsing Time End for slot %s. %v", eventModel.SlotID, err)
-
 	}
 
 	if eventModel.TimeStartHHMM > eventModel.TimeEndHHMM {
