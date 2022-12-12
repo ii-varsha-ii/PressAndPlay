@@ -72,6 +72,13 @@ func (event *EventsDBData) createEvent() (int, error) {
 	event.UpdatedAt = time.Now()
 	event.Notified = false
 
+	court, _ := getCourtByID(event.CourtID)
+	for _, slot := range court.AvailableSlots {
+		if slot.SlotId == event.SlotID {
+			event.TimeStartHHMM = int(slot.TimeStartHHMM)
+			event.TimeEndHHMM = int(slot.TimeEndHHMM)
+		}
+	}
 	if _, err := dbClient.NewInsert().Model(event).Exec(context.TODO()); err != nil {
 		return http.StatusInternalServerError, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Insert", EventsTableName, err)
 	}

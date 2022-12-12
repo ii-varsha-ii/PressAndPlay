@@ -130,10 +130,11 @@ func handleSlotBookedNotifications(message *sarama.ConsumerMessage) {
 	slotModel.StringToObj(eventMessage)
 	logrus.Infof("handling slot booking notification: %s", slotModel)
 	eventsModel := EventsDBData{
-		UserID:    slotModel.UserId,
-		ManagerID: slotModel.ManagerId,
-		SlotID:    slotModel.SlotId,
-		CourtID:   slotModel.CourtId,
+		UserID:           slotModel.UserId,
+		ManagerID:        slotModel.ManagerId,
+		SlotID:           slotModel.SlotId,
+		CourtID:          slotModel.CourtId,
+		BookingTimestamp: slotModel.Timestamp,
 	}
 	if _, err := eventsModel.createEvent(); err != nil {
 		logrus.Errorf("exception while creating events %s. %v", eventsModel, err)
