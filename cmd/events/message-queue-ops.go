@@ -17,13 +17,13 @@ const (
 )
 
 var (
-	topic string
+	userDeletedTopic string
 )
 
 func newKafkaHandler() (sarama.SyncProducer, error) {
 	host := common.GetEnv(KAFKA_HOST_ENV, "localhost")
 	port := common.GetEnv(KAFKA_PORT_ENV, "9092")
-	topic = common.GetEnv(KAFKA_USER_DELETE_TOPIC_ENV, "user-deleted")
+	userDeletedTopic = common.GetEnv(KAFKA_USER_DELETE_TOPIC_ENV, "user-deleted")
 	retry, _ := strconv.Atoi(common.GetEnv(KAFKA_RETRY_ENV, "5"))
 
 	config := sarama.NewConfig()
@@ -45,14 +45,14 @@ func notifyUserDeletedEvent(userID string) error {
 		return err
 	}
 	msg := &sarama.ProducerMessage{
-		Topic: topic,
+		Topic: userDeletedTopic,
 		Value: sarama.StringEncoder(userID),
 	}
 	partition, offset, err := messageQueueProducer.SendMessage(msg)
 	if err != nil {
 		return err
 	}
-	logrus.Infof("Sent message: %s, on topic %s. partition: %v, offset: %v", userID, topic, partition, offset)
+	logrus.Infof("Sent message: %s, on topic %s. partition: %v, offset: %v", userID, userDeletedTopic, partition, offset)
 	return nil
 }
 

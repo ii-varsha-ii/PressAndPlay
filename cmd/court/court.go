@@ -35,6 +35,7 @@ var (
 	err                    error
 	ctx                    = context.Background()
 	messageQueueProducer   sarama.SyncProducer
+	messageQueueConsumer   sarama.Consumer
 	httpRouter             *mux.Router
 	gRPCServerPort, _      = strconv.Atoi(common.GetEnv(GRPC_SERVER_PORT_ENV, "50003"))
 	httpServerHost         = common.GetEnv(HTTP_SERVER_HOST_ENV, "localhost")
@@ -63,10 +64,14 @@ func initializeSessionHandler() error {
 	return nil
 }
 
-func initializeMessageQueueProducer() error {
-	messageQueueProducer, err = newKafkaHandler()
+func initializeMessageQueue() error {
+	messageQueueProducer, messageQueueConsumer, err = newKafkaHandler()
 	if err != nil {
 		return fmt.Errorf("exception while initializing kafka producer client. %v", err)
+	}
+	userDeletedTopic := common.GetEnv(KAFKA_USER_DELETE_TOPIC_ENV, "user-deleted")
+	if err := initializeConsumers(userDeletedTopic, handleUserDeletedNotification); err != nil {
+		return fmt.Errorf("exception while initializing kafka consumer for topic %s. %v", userDeletedTopic, err)
 	}
 	return nil
 }
@@ -125,7 +130,7 @@ func initialize() error {
 	if err := initializeSessionHandler(); err != nil {
 		return fmt.Errorf("session handler initialization error. %v", err)
 	}
-	if err := initializeMessageQueueProducer(); err != nil {
+	if err := initializeMessageQueue(); err != nil {
 		return fmt.Errorf("message queue producer initialization error. %v", err)
 	}
 	if err := initializeHTTPRouter(); err != nil {

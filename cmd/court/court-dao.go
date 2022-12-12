@@ -184,6 +184,16 @@ func (court *CourtModel) deleteByID() (int, error) {
 	return http.StatusOK, nil
 }
 
+func (court *CourtModel) deleteByManagerID() (int, error) {
+	if err := verifyDatabaseConnection(dbClient); err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Delete", CourtTableName, err)
+	}
+	if _, err := dbClient.DeleteMany(ctx, bson.M{"managerId": court.ManagerId}); err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("exception while performing %s Operation on Table: %s. %v", "Delete", CourtTableName, err)
+	}
+	return http.StatusOK, nil
+}
+
 func validateCourtModel(courtModel *CourtModel, create bool) error {
 	seen := map[string]bool{}
 	if courtModel.Name == "" {

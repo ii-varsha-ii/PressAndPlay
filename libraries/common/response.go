@@ -3,6 +3,7 @@ package common
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -41,4 +42,19 @@ func RespondWithStatusCode(w http.ResponseWriter, code int, headers map[string]s
 	w.Header().Set("Access-Control-Allow-Headers", "*")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.WriteHeader(code)
+}
+
+func RetryOnError(retryCount int, backOffTime time.Duration, fn func() error) error {
+	var err error
+	for attempt := 0; attempt < retryCount; attempt++ {
+		if err = fn(); err != nil {
+			log.Errorf("RetryOnError: attempt number: %d. Error: %v", attempt, err)
+		} else {
+			log.Infof("RetryOnError: attempt number: %d. successful!", attempt)
+			return nil
+		}
+		time.Sleep(backOffTime)
+		continue
+	}
+	return err
 }
