@@ -139,9 +139,9 @@ func initialize() error {
 	if err := initializeGRPCUserClient(); err != nil {
 		return fmt.Errorf("gRPC client initialization error. %v", err)
 	}
-	//if err := initializeGRPCEventClient(); err != nil {
-	//	return fmt.Errorf("gRPC client initialization error. %v", err)
-	//}
+	if err := initializeGRPCEventClient(); err != nil {
+		return fmt.Errorf("gRPC client initialization error. %v", err)
+	}
 	return nil
 }
 

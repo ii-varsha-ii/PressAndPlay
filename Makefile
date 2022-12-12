@@ -34,7 +34,7 @@ deploy-docker:
 	cd deployment/docker && docker-compose up -d
 	: $@: Succeeded
 
-updeploy-docker:
+undeploy-docker:
 	@echo "Removing PressAndPlay from docker..."
 	cd deployment/docker && docker-compose down -v
 	: $@: Succeeded
