@@ -33,6 +33,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: court
+            name: events
             port:
               number: 50000

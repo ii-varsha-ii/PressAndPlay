@@ -25,7 +25,7 @@ spec:
               name: grpc
           env:
             - name: GRPC_EVENT_CLIENT_HOST
-              value: "event"
+              value: "events"
             - name: GRPC_EVENT_CLIENT_PORT
               value: "50001"
             - name: GRPC_USER_CLIENT_HOST
