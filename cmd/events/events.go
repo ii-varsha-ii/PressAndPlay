@@ -77,6 +77,14 @@ func initializeMessageQueue() error {
 	if err := initializeConsumers(slotBookedTopic, handleSlotBookedNotifications); err != nil {
 		return fmt.Errorf("exception while initializing kafka consumer for topic %s. %v", slotBookedTopic, err)
 	}
+	courtDeletedTopic := common.GetEnv(KAFKA_COURT_DELETE_TOPIC_ENV, "court-deleted")
+	if err := initializeConsumers(courtDeletedTopic, handleCourtDeletedNotifications); err != nil {
+		return fmt.Errorf("exception while initializing kafka consumer for topic %s. %v", slotBookedTopic, err)
+	}
+	userDeletedTopic := common.GetEnv(KAFKA_USER_DELETE_TOPIC_ENV, "user-deleted")
+	if err := initializeConsumers(userDeletedTopic, handleUserDeletedNotifications); err != nil {
+		return fmt.Errorf("exception while initializing kafka consumer for topic %s. %v", slotBookedTopic, err)
+	}
 	return nil
 }
 

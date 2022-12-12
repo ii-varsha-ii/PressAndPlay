@@ -7,7 +7,8 @@
 .PHONY: SERVICES DEBUG_SERVICES COV_SERVICES ztests srvs/zswagger-ui/Dockerfile all docker debug docker-debug push test zservices clean check-version man-pages coverage docker-cov
 
 SERVICES := user \
-			court
+			court \
+			events
 
 DOCKER_BUILD := DOCKER_BUILDKIT=1 docker build
 DOCKER_PUSH := DOCKER_BUILDKIT=1 docker push

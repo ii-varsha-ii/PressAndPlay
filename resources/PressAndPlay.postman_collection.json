@@ -219,6 +219,76 @@
 					"response": []
 				},
 				{
+					"name": "Get Customer By",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"<========== Request headers =========>\");",
+									"console.log(request.headers);",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (responseCode.code === 200 ) {",
+									"    console.log(\"User Login Successful\");",
+									"}",
+									"//setTimeout(function(){}, environment.Wait); ",
+									"",
+									"console.log(\" <=================== ResponseBody =================== >\"+  responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "OPTIONS",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{baseUrl}}/api/v1/",
+								"type": "text"
+							},
+							{
+								"key": "X-Request-Id",
+								"value": "{{userRequestToken}}",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{userCsrfToken}}",
+								"type": "text"
+							},
+							{
+								"key": "User-Session-Id",
+								"value": "{{lastCustomerSessionID}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseUserUrl}}/api/v1/user/{{lastCustomerID}}",
+							"host": [
+								"{{baseUserUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"{{lastCustomerID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Delete Customer By ID",
 					"event": [
 						{
@@ -930,6 +1000,107 @@
 								"court",
 								"{{lastCourtID}}",
 								"rating"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "events",
+			"item": [
+				{
+					"name": "Create Event",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "User-Session-Id",
+								"value": "{{lastManagerSessionID}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{\n    \"userId\": \"{{lastCustomerID}}\",\n    \"managerId\": \"{{lastManagerID}}\",\n    \"courtId\": \"{{lastCourtID}}\",\n    \"slotId\": \"2\",\n    \"timeStartHHMM\": 1100,\n    \"timeEndHHMM\":1200\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseEventsUrl}}/api/v1/events/create",
+							"host": [
+								"{{baseEventsUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"events",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unread Events",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "User-Session-Id",
+								"value": "{{lastManagerSessionID}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseEventsUrl}}/api/v1/events/notifications",
+							"host": [
+								"{{baseEventsUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"events",
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "User-Session-Id",
+								"value": "{{lastManagerSessionID}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseEventsUrl}}/api/v1/events",
+							"host": [
+								"{{baseEventsUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"events"
 							]
 						}
 					},

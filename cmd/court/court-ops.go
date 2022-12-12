@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/adarshsrinivasan/PressAndPlay/libraries/proto"
+	"github.com/google/uuid"
 	"math"
 	"net/http"
 	"sort"
 	"strconv"
 	"strings"
-
-	"github.com/adarshsrinivasan/PressAndPlay/libraries/proto"
-	"github.com/google/uuid"
 )
 
 func CreateCourt(courtModel CourtModel) (CourtModel, int, error) {
@@ -148,18 +147,12 @@ func BookCourtByID(courtID, slotID, userID string) (CourtModel, int, error) {
 }
 
 func checkUserBooked(courtID, userID string) (bool, error) {
-	return true, nil
-	//events, err := getUserEvents(userID, courtID)
-	//if err != nil {
-	//	return false, err
-	//}
-	//currentTime := time.Now()
-	//for _, event := range events {
-	//	if currentTime.Sub(event.CreatedAt.AsTime()).Hours() >= 24 {
-	//		return true, nil
-	//	}
-	//}
-	//return false, nil
+	events, err := getUserEvents(userID, courtID)
+	if err != nil {
+		return false, err
+	}
+
+	return len(events) > 0, nil
 }
 
 func calculateDistance(givenLocation string, courtLocation string) (float64, error) {

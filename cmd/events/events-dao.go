@@ -148,6 +148,54 @@ func (event *EventsDBData) updateByID() (int, error) {
 	return http.StatusOK, nil
 }
 
+func (event *EventsDBData) deleteByUserID() (int, error) {
+	if err := verifyDatabaseConnection(dbClient); err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Delete", EventsTableName, err)
+	}
+	whereClauses := []WhereClauseType{
+		{
+			ColumnName:   "userId",
+			RelationType: EQUAL,
+			ColumnValue:  event.UserID,
+		},
+	}
+	return event.deleteEvents(whereClauses)
+}
+
+func (event *EventsDBData) deleteByCourtID() (int, error) {
+	if err := verifyDatabaseConnection(dbClient); err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Delete", EventsTableName, err)
+	}
+	whereClauses := []WhereClauseType{
+		{
+			ColumnName:   "courtId",
+			RelationType: EQUAL,
+			ColumnValue:  event.CourtID,
+		},
+	}
+	return event.deleteEvents(whereClauses)
+}
+
+func (event *EventsDBData) deleteEvents(whereClauses []WhereClauseType) (int, error) {
+	if err := verifyDatabaseConnection(dbClient); err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Delete", EventsTableName, err)
+	}
+	deleteQuery := dbClient.NewDelete().
+		Model(event)
+
+	// prepare whereClause.
+	queryStr, vals, err := createWhereClause(whereClauses)
+	if err != nil {
+		return http.StatusBadRequest, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Delete", EventsTableName, err)
+	}
+	deleteQuery = deleteQuery.Where(queryStr, vals...)
+
+	if _, err := deleteQuery.Exec(context.TODO()); err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Delete", EventsTableName, err)
+	}
+	return http.StatusOK, nil
+}
+
 func convertDBDataToModel(eventsDbData EventsDBData) EventsModel {
 	eventsModel := EventsModel{
 		Id:               eventsDbData.Id,

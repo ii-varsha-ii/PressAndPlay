@@ -13,11 +13,12 @@ import (
 )
 
 const (
-	KAFKA_HOST_ENV              = "KAFKA_HOST"
-	KAFKA_PORT_ENV              = "KAFKA_PORT"
-	KAFKA_USER_DELETE_TOPIC_ENV = "KAFKA_USER_DELETE_TOPIC"
-	KAFKA_SLOT_BOOKED_TOPIC_ENV = "KAFKA_SLOT_BOOKED_TOPIC_ENV"
-	KAFKA_RETRY_ENV             = "KAFKA_RETRY"
+	KAFKA_HOST_ENV               = "KAFKA_HOST"
+	KAFKA_PORT_ENV               = "KAFKA_PORT"
+	KAFKA_USER_DELETE_TOPIC_ENV  = "KAFKA_USER_DELETE_TOPIC"
+	KAFKA_COURT_DELETE_TOPIC_ENV = "KAFKA_COURT_DELETE_TOPIC"
+	KAFKA_SLOT_BOOKED_TOPIC_ENV  = "KAFKA_SLOT_BOOKED_TOPIC_ENV"
+	KAFKA_RETRY_ENV              = "KAFKA_RETRY"
 )
 
 var (
@@ -136,6 +137,26 @@ func handleSlotBookedNotifications(message *sarama.ConsumerMessage) {
 	}
 	if _, err := eventsModel.createEvent(); err != nil {
 		logrus.Errorf("exception while creating events %s. %v", eventsModel, err)
+	}
+}
+
+func handleUserDeletedNotifications(message *sarama.ConsumerMessage) {
+	userIdFromMsg := string(message.Value)
+	eventsObj := EventsDBData{
+		UserID: userIdFromMsg,
+	}
+	if _, err := eventsObj.deleteByUserID(); err != nil {
+		logrus.Errorf("exception while deleting events by user id %s. %v", userIdFromMsg, err)
+	}
+}
+
+func handleCourtDeletedNotifications(message *sarama.ConsumerMessage) {
+	courtIdFromMsg := string(message.Value)
+	eventsObj := EventsDBData{
+		CourtID: courtIdFromMsg,
+	}
+	if _, err := eventsObj.deleteByCourtID(); err != nil {
+		logrus.Errorf("exception while deleting events by court id %s. %v", courtIdFromMsg, err)
 	}
 }
 
