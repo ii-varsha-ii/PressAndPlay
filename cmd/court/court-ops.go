@@ -147,12 +147,13 @@ func BookCourtByID(courtID, slotID, userID string) (CourtModel, int, error) {
 }
 
 func checkUserBooked(courtID, userID string) (bool, error) {
-	events, err := getUserEvents(userID, courtID)
-	if err != nil {
-		return false, err
-	}
-
-	return len(events) > 0, nil
+	return true, nil
+	//events, err := getUserEvents(userID, courtID)
+	//if err != nil {
+	//	return false, err
+	//}
+	//
+	//return len(events) > 0, nil
 }
 
 func calculateDistance(givenLocation string, courtLocation string) (float64, error) {
