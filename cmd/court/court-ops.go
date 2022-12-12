@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/adarshsrinivasan/PressAndPlay/libraries/proto"
-	"github.com/google/uuid"
 	"math"
 	"net/http"
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/adarshsrinivasan/PressAndPlay/libraries/proto"
+	"github.com/google/uuid"
 )
 
 func CreateCourt(courtModel CourtModel) (CourtModel, int, error) {
@@ -138,7 +139,7 @@ func BookCourtByID(courtID, slotID, userID string) (CourtModel, int, error) {
 				if statusCode, err := courtModel.updateCourt(); err != nil {
 					return CourtModel{}, statusCode, err
 				}
-				notifySlotBookedEvent(userID, courtID, slotID)
+				notifySlotBookedEvent(userID, courtModel.ManagerId, courtID, slotID)
 				return courtModel, http.StatusOK, nil
 			}
 		}

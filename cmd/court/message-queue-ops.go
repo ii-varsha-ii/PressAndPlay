@@ -3,11 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Shopify/sarama"
+
 	"github.com/adarshsrinivasan/PressAndPlay/libraries/common"
-	"github.com/sirupsen/logrus"
+
 	"strconv"
 	"time"
+
+	"github.com/Shopify/sarama"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -25,9 +28,11 @@ var (
 )
 
 type SlotBookedNotification struct {
-	UserId  string `json:"user_id"`
-	CourtId string `json:"court_id"`
-	SlotId  string `json:"slot_id"`
+	UserId    string    `json:"user_id"`
+	ManagerId string    `json:"manager_id"`
+	CourtId   string    `json:"court_id"`
+	SlotId    string    `json:"slot_id"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 func (s *SlotBookedNotification) ObjToString() string {
@@ -116,14 +121,16 @@ func handleUserDeletedNotification(message *sarama.ConsumerMessage) {
 	}
 }
 
-func notifySlotBookedEvent(userID, courtID, slotID string) error {
+func notifySlotBookedEvent(userID, managerID, courtID, slotID string) error {
 	if err := validateMessageQueueProducer(messageQueueProducer); err != nil {
 		return err
 	}
 	slotBookedObj := SlotBookedNotification{
-		UserId:  userID,
-		CourtId: courtID,
-		SlotId:  slotID,
+		UserId:    userID,
+		ManagerId: managerID,
+		CourtId:   courtID,
+		SlotId:    slotID,
+		Timestamp: time.Now(),
 	}
 	msg := &sarama.ProducerMessage{
 		Topic: slotBookedTopic,

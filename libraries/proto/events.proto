@@ -6,8 +6,8 @@ option go_package = "github.com/adarshsrinivasan/PressAndPlay/libraries/proto";
 
 // Interface exported by the server.
 service Events {
-  // GetUser - takes UserModel with only id populated as input and returns complete UserModel
-  rpc GetEvents(EventModel) returns (EventResponse) {}
+  // GetEvents - takes EventModel with only managerId populated as input and returns list of EventModel
+  rpc GetEventsByUserIdAndCourtId(EventModel) returns (EventResponse) {}
 }
 
 message EventResponse {
@@ -17,10 +17,11 @@ message EventResponse {
 message EventModel {
   string id = 1;
   string userId = 2;
-  string courtId = 3;
-  string slotId = 4;
-  int32 timeStartHHMM = 5;
-  int32 timeEndHHMM = 6;
-  bool read = 7;
-  google.protobuf.Timestamp createdAt = 8;
+  string managerId = 3;
+  string courtId = 4;
+  string slotId = 5;
+  google.protobuf.Timestamp bookingTimestamp = 6;
+  int32 timeStartHHMM = 7;
+  int32 timeEndHHMM = 8;
+  bool notified = 9;
 }

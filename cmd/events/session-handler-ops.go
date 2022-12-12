@@ -3,12 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/adarshsrinivasan/PressAndPlay/libraries/common"
-	"github.com/go-redis/redis/v8"
-	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 	"strconv"
 	"time"
+
+	"github.com/adarshsrinivasan/PressAndPlay/libraries/common"
+	"github.com/go-redis/redis/v8"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -47,23 +47,6 @@ func newRedisHandler() (*redis.Client, error) {
 	})
 	return client, client.Ping(ctx).Err()
 }
-func createNewSession(userData *UserDBData) (string, error) {
-	if err := verifyRedisConnection(sessionCLient); err != nil {
-		return "", err
-	}
-	expiration, _ := strconv.Atoi(common.GetEnv(REDIS_DATA_EXPIRATION_IN_HRS_ENV, "0"))
-	sessionDetails := sessionBody{
-		SessionID:     uuid.New().String(),
-		UserID:        userData.Id,
-		LastLoginTime: userData.LastLogin,
-	}
-	sessionValue := sessionDetails.toString()
-	if _, err := sessionCLient.SetNX(ctx, sessionDetails.SessionID, sessionValue,
-		time.Duration(expiration)*time.Hour).Result(); err != nil {
-		return "", err
-	}
-	return sessionDetails.SessionID, nil
-}
 
 func validateSessionID(sessionID string) bool {
 	if err := verifyRedisConnection(sessionCLient); err != nil {
@@ -72,6 +55,21 @@ func validateSessionID(sessionID string) bool {
 	}
 	_, err := sessionCLient.Get(ctx, sessionID).Result()
 	return err == nil
+}
+
+func getUserIdFromSession(sessionID string) string {
+	if err := verifyRedisConnection(sessionCLient); err != nil {
+		logrus.Errorf("getUserIdFromSession(%s): exception. %v", sessionID, err)
+		return ""
+	}
+	value, err := sessionCLient.Get(ctx, sessionID).Result()
+	if err != nil {
+		logrus.Errorf("getUserIdFromSession(%s): exception. %v", sessionID, err)
+		return ""
+	}
+	session := sessionBody{}
+	session.toStruct(value)
+	return session.UserID
 }
 
 func verifyRedisConnection(redisClient *redis.Client) error {

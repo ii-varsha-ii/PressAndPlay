@@ -70,7 +70,7 @@ func getCourtHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "OPTIONS" {
 		common.RespondWithStatusCode(w, http.StatusOK, nil)
 	}
-	if r.Header.Get("User-Session-Id") != "" && !validateSessionID(r.Header.Get("User-Session-Id")) {
+	if !validateSessionID(r.Header.Get("User-Session-Id")) {
 		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("getCourtHandler: Invalid session. Please login again"))
 		return
 	}

@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/adarshsrinivasan/PressAndPlay/libraries/common"
 	"strconv"
+
+	"github.com/adarshsrinivasan/PressAndPlay/libraries/common"
 
 	"github.com/Shopify/sarama"
 	"github.com/sirupsen/logrus"

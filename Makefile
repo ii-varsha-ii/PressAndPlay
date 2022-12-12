@@ -108,6 +108,7 @@ help:
 	@echo "<target> : build and push the specific service"
 	@echo "      make user"
 	@echo "      make court"
+	@echo "      make events"
 	@echo "gen-proto: generate proto"
 	@echo "deploy-docker: deploy PressAndPlay using Docker"
 	@echo "undeploy-docker: undeploy PressAndPlay from Docker"

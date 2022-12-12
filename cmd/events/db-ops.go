@@ -6,11 +6,12 @@ import (
 	"crypto/tls"
 	"database/sql"
 	"fmt"
-	"github.com/adarshsrinivasan/PressAndPlay/libraries/common"
 	"net/http"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/adarshsrinivasan/PressAndPlay/libraries/common"
 
 	_ "github.com/lib/pq"
 	"github.com/oiime/logrusbun"
@@ -172,7 +173,7 @@ func createUserTable() error {
 		return err
 	}
 
-	tableSchemaPtr := reflect.New(reflect.TypeOf(UserDBData{}))
+	tableSchemaPtr := reflect.New(reflect.TypeOf(EventsDBData{}))
 	createTableQuery := dbClient.NewCreateTable().
 		Model(tableSchemaPtr.Interface()).
 		IfNotExists()
@@ -188,7 +189,7 @@ func createUserTable() error {
 	emailIndex := IndexParams{
 		Name:        "idx_user_email",
 		Type:        INDEX_TYPE_GIN,
-		TableName:   UserTableName,
+		TableName:   EventsTableName,
 		ColumnNames: []string{"email"},
 	}
 	emailIndexCreateQuery := createIndexCreateQuery(emailIndex)
@@ -213,7 +214,7 @@ func createIndexCreateQuery(indexCreateParam IndexParams) string {
 	buffer.WriteString(" on ")
 
 	if indexCreateParam.TableName == "" {
-		buffer.WriteString(UserTableName)
+		buffer.WriteString(EventsTableName)
 	} else {
 		buffer.WriteString(indexCreateParam.TableName)
 	}
@@ -448,14 +449,14 @@ func createOrderBy(orderByClause []string) (string, error) {
 }
 
 func readUtil(pagination *Cursor, whereClausefilters []WhereClauseType,
-	orderByClause []string, groupByClause, selectedColumns []string, singleRecord bool) (UserDBData, []UserDBData, *Cursor, int, error) {
+	orderByClause []string, groupByClause, selectedColumns []string, singleRecord bool) (EventsDBData, []EventsDBData, *Cursor, int, error) {
 
 	if err := verifyDatabaseConnection(dbClient); err != nil {
-		return UserDBData{}, nil, nil, http.StatusInternalServerError, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Read", UserTableName, err)
+		return EventsDBData{}, nil, nil, http.StatusInternalServerError, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Read", EventsTableName, err)
 	}
 	var (
-		singleUser    = UserDBData{}
-		listUser      []UserDBData
+		singleUser    = EventsDBData{}
+		listUser      []EventsDBData
 		newOffset     int
 		newPagination = new(Cursor)
 		readQuery     *bun.SelectQuery
@@ -476,7 +477,7 @@ func readUtil(pagination *Cursor, whereClausefilters []WhereClauseType,
 	if len(whereClausefilters) != 0 {
 		queryStr, vals, err := createWhereClause(whereClausefilters)
 		if err != nil {
-			return UserDBData{}, nil, nil, http.StatusBadRequest, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Read", UserTableName, err)
+			return EventsDBData{}, nil, nil, http.StatusBadRequest, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Read", EventsTableName, err)
 		}
 		readQuery = readQuery.Where(queryStr, vals...)
 	}
@@ -488,7 +489,7 @@ func readUtil(pagination *Cursor, whereClausefilters []WhereClauseType,
 
 	orderByCols, err := createOrderBy(orderByClause)
 	if err != nil {
-		return UserDBData{}, nil, nil, http.StatusBadRequest, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Read", UserTableName, err)
+		return EventsDBData{}, nil, nil, http.StatusBadRequest, fmt.Errorf("unable to Perform %s Operation on Table: %s. %v", "Read", EventsTableName, err)
 	}
 	if orderByCols != "" {
 		readQuery = readQuery.OrderExpr(orderByCols)
@@ -496,8 +497,8 @@ func readUtil(pagination *Cursor, whereClausefilters []WhereClauseType,
 
 	if !singleRecord && pagination != nil {
 		if pagination.PageSize <= 0 {
-			return UserDBData{}, nil, nil, http.StatusBadRequest, fmt.Errorf("unable to Perform %s Operation on Table: %s. Invalid PazeSize %v", "Read",
-				UserTableName, pagination.PageSize)
+			return EventsDBData{}, nil, nil, http.StatusBadRequest, fmt.Errorf("unable to Perform %s Operation on Table: %s. Invalid PazeSize %v", "Read",
+				EventsTableName, pagination.PageSize)
 		}
 
 		if pagination.PageSize != 0 {
@@ -511,8 +512,8 @@ func readUtil(pagination *Cursor, whereClausefilters []WhereClauseType,
 			} else {
 				offset, cErr = strconv.Atoi(pagination.PageToken)
 				if cErr != nil {
-					return UserDBData{}, nil, nil, http.StatusInternalServerError, fmt.Errorf("unable to Perform %s Operation on Table: %s. Exception while converting pagetoken to offset. %v", "Read",
-						UserTableName, cErr)
+					return EventsDBData{}, nil, nil, http.StatusInternalServerError, fmt.Errorf("unable to Perform %s Operation on Table: %s. Exception while converting pagetoken to offset. %v", "Read",
+						EventsTableName, cErr)
 				}
 			}
 			readQuery = readQuery.Limit(pagination.PageSize).Offset(offset)
@@ -524,8 +525,8 @@ func readUtil(pagination *Cursor, whereClausefilters []WhereClauseType,
 	}
 
 	if count, err := readQuery.ScanAndCount(context.TODO()); err != nil {
-		return UserDBData{}, nil, nil, http.StatusInternalServerError, fmt.Errorf("unable to Perform %s Operation on Table: %s. Exception while reading data. %v", "Read",
-			UserTableName, err)
+		return EventsDBData{}, nil, nil, http.StatusInternalServerError, fmt.Errorf("unable to Perform %s Operation on Table: %s. Exception while reading data. %v", "Read",
+			EventsTableName, err)
 	} else if !singleRecord && pagination != nil {
 		if newOffset >= count {
 			newPagination.PageToken = ""

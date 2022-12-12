@@ -2,37 +2,56 @@ package main
 
 import (
 	"context"
+
 	"github.com/adarshsrinivasan/PressAndPlay/libraries/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type userGRPCService struct {
-	proto.UnimplementedUserServer
+type eventsGRPCService struct {
+	proto.UnimplementedEventsServer
 }
 
-func (u *userGRPCService) GetUser(ctx context.Context, userModel *proto.UserModel) (*proto.UserModel, error) {
-	myUserModel, _, err := GetUserByID(userModel.GetId())
+func (u *eventsGRPCService) GetEventsByUserIdAndCourtId(ctx context.Context, eventsModel *proto.EventModel) (*proto.EventResponse, error) {
+	myEventsModel, _, err := GetEventsByUserIdAndCourtId(eventsModel.UserId, eventsModel.CourtId)
+	var result proto.EventResponse
 	if err != nil {
 		return nil, err
 	}
-	protoUserModel := &proto.UserModel{
-		Id:          myUserModel.Id,
-		FirstName:   myUserModel.FirstName,
-		LastName:    myUserModel.LastName,
-		DateOfBirth: myUserModel.DateOfBirth,
-		Gender:      proto.Gender(myUserModel.Gender),
-		Address: &proto.Address{
-			AddressLine1: myUserModel.Address.AddressLine1,
-			AddressLine2: myUserModel.Address.AddressLine2,
-			City:         myUserModel.Address.City,
-			State:        myUserModel.Address.State,
-			Country:      myUserModel.Address.Country,
-			Pincode:      myUserModel.Address.Pincode,
-		},
-		Phone:    myUserModel.Phone,
-		Role:     proto.Role(myUserModel.Role),
-		Email:    myUserModel.Email,
-		Password: myUserModel.Password,
-		Verified: myUserModel.Verified,
+
+	var protoEventsModel []*proto.EventModel
+	for _, event := range myEventsModel {
+		protoEventsModel = append(protoEventsModel, &proto.EventModel{
+			Id:               event.Id,
+			UserId:           event.UserID,
+			ManagerId:        event.ManagerID,
+			SlotId:           event.SlotID,
+			BookingTimestamp: timestamppb.New(event.BookingTimestamp),
+			TimeStartHHMM:    int32(event.TimeStartHHMM),
+			TimeEndHHMM:      int32(event.TimeEndHHMM),
+			Notified:         event.Notified,
+		})
 	}
-	return protoUserModel, nil
+	result.EventModelList = protoEventsModel
+	return &result, nil
+}
+func getUserByID(userID string) (*proto.UserModel, error) {
+	user := &proto.UserModel{
+		Id: userID,
+	}
+	result, err := gRPCUserClient.GetUser(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func getCourtByID(courtID string) (*proto.CourtModel, error) {
+	court := &proto.CourtModel{
+		Id: courtID,
+	}
+	result, err := gRPCCourtClient.GetCourt(ctx, court)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }

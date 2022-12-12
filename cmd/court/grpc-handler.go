@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+
 	"github.com/adarshsrinivasan/PressAndPlay/libraries/proto"
 )
 
@@ -45,7 +46,7 @@ func getUserEvents(userID, courtID string) ([]*proto.EventModel, error) {
 		UserId:  userID,
 		CourtId: courtID,
 	}
-	result, err := gRPCEventClient.GetEvents(ctx, events)
+	result, err := gRPCEventClient.GetEventsByUserIdAndCourtId(ctx, events)
 	if err != nil {
 		return nil, err
 	}

@@ -3,95 +3,77 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/adarshsrinivasan/PressAndPlay/libraries/common"
 	"net/http"
+
+	"github.com/adarshsrinivasan/PressAndPlay/libraries/common"
 
 	"github.com/gorilla/mux"
 )
 
 const (
-	API_PREFIX   = "/api/v1/user"
+	API_PREFIX   = "/api/v1/events"
 	ID_URL_REGEX = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
 )
 
-func createUserHandler(w http.ResponseWriter, r *http.Request) {
-	// Stop here if its Preflighted OPTIONS request
-	if r.Method == "OPTIONS" {
-		common.RespondWithStatusCode(w, http.StatusOK, nil)
+func createEvent(w http.ResponseWriter, r *http.Request) {
+	if !validateSessionID(r.Header.Get("User-Session-Id")) {
+		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("createEventHandler: Invalid session. Please login again"))
+		return
 	}
-	var user UserModel
+	var event EventsModel
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&user); err != nil {
-		common.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("createUserHandler: exception while parsing request. %v", err))
+	if err := decoder.Decode(&event); err != nil {
+		common.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("createEventHandler: exception while parsing request. %v", err))
 		return
 	}
 	defer r.Body.Close()
 
-	if updatedUser, statusCode, err := CreateUser(user); err != nil {
-		common.RespondWithError(w, statusCode, fmt.Sprintf("createUserHandler: exception while creating user. %v", err))
+	if createdEvent, statusCode, err := CreateEvent(event); err != nil {
+		common.RespondWithError(w, statusCode, fmt.Sprintf("createEventHandler: exception while creating event. %v", err))
 		return
 	} else {
-		common.RespondWithJSON(w, http.StatusCreated, "", updatedUser)
+		common.RespondWithJSON(w, http.StatusCreated, "", createdEvent)
 	}
 }
 
-func loginUserHandler(w http.ResponseWriter, r *http.Request) {
-	var user UserModel
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&user); err != nil {
-		common.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("userLoginHandler: exception while parsing request. %v", err))
-		return
-	}
-	defer r.Body.Close()
-
-	if updatedUser, sessionID, statusCode, err := LoginUser(user); err != nil {
-		common.RespondWithError(w, statusCode, fmt.Sprintf("userLoginHandler: exception while authenticating user. %v", err))
-		return
-	} else {
-		common.RespondWithJSON(w, http.StatusCreated, sessionID, updatedUser)
-	}
-}
-
-func getUserHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
+func listUnreadEventsHandler(w http.ResponseWriter, r *http.Request) {
 	if !validateSessionID(r.Header.Get("User-Session-Id")) {
 		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("getUserHandler: Invalid session. Please login again"))
 		return
 	}
-
-	if resultUser, statusCode, err := GetUserByID(vars["id"]); err != nil {
-		common.RespondWithError(w, statusCode, fmt.Sprintf("getUserHandler: exception while fetching user %s. %v",
-			vars["id"], err))
+	managerId := getUserIdFromSession(r.Header.Get("User-Session-Id"))
+	if resultEvents, statusCode, err := ListUnreadEvents(managerId); err != nil {
+		common.RespondWithError(w, statusCode, fmt.Sprintf("listUnreadEventsHandler: exception while fetching list for unread events. %v",
+			err))
 		return
 	} else {
-		common.RespondWithJSON(w, http.StatusOK, "", resultUser)
+		common.RespondWithJSON(w, http.StatusOK, "", resultEvents)
 	}
 }
-
-func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	if !validateSessionID(r.Header.Get("User-Session-Id")) {
-		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("deleteUserHandler: Invalid session. Please login again"))
+func getHistoryHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Get("User-Session-Id") != "" && !validateSessionID(r.Header.Get("User-Session-Id")) {
+		common.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("getUserHandler: Invalid session. Please login again"))
 		return
 	}
+	userId := getUserIdFromSession(r.Header.Get("User-Session-Id"))
+	//vars := mux.Vars(r)
+	//TODO: validate Start and end date
 
-	if statusCode, err := DeleteUserByID(vars["id"]); err != nil {
-		common.RespondWithError(w, statusCode, fmt.Sprintf("deleteUserHandler: exception while fetching user %s. %v",
-			vars["id"], err))
+	if resultEvents, statusCode, err := GetHistory(userId); err != nil {
+		common.RespondWithError(w, statusCode, fmt.Sprintf("listUnreadEventsHandler: exception while fetching list for unread events. %v",
+			err))
 		return
 	} else {
-		common.RespondWithStatusCode(w, http.StatusAccepted, nil)
+		common.RespondWithJSON(w, http.StatusOK, "", resultEvents)
 	}
 }
 
 func initializeMuxRoutes() {
 	httpRouter = mux.NewRouter()
-	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, "create"),
-		createUserHandler).Methods("POST")
-	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, "login"),
-		loginUserHandler).Methods("POST")
-	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, fmt.Sprintf("{id:%s}", ID_URL_REGEX)),
-		getUserHandler).Methods("GET")
-	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, fmt.Sprintf("{id:%s}", ID_URL_REGEX)),
-		deleteUserHandler).Methods("DELETE")
+	httpRouter.HandleFunc(fmt.Sprintf("%s", API_PREFIX),
+		getHistoryHandler).Methods("GET")
+	httpRouter.HandleFunc(fmt.Sprintf("%s/create", API_PREFIX),
+		createEvent).Methods("POST")
+	httpRouter.HandleFunc(fmt.Sprintf("%s/%s", API_PREFIX, "notifications"),
+		listUnreadEventsHandler).Methods("GET")
 }

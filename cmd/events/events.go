@@ -3,6 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+	"net"
+	"net/http"
+	"strconv"
+
 	"github.com/Shopify/sarama"
 	"github.com/adarshsrinivasan/PressAndPlay/libraries/common"
 	"github.com/adarshsrinivasan/PressAndPlay/libraries/proto"
@@ -11,34 +16,36 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/uptrace/bun"
 	"google.golang.org/grpc"
-	"log"
-	"net"
-	"net/http"
-	"strconv"
 )
 
 const (
-	SERVICE_NAME              = "events"
-	GRPC_SERVER_PORT_ENV      = "GRPC_SERVER_PORT"
-	GRPC_USER_CLIENT_HOST_ENV = "GRPC_USER_CLIENT_HOST"
-	GRPC_USER_CLIENT_PORT_ENV = "GRPC_USER_CLIENT_PORT"
-	HTTP_SERVER_HOST_ENV      = "HTTP_SERVER_HOST"
-	HTTP_SERVER_PORT_ENV      = "HTTP_SERVER_PORT"
+	SERVICE_NAME               = "events"
+	GRPC_SERVER_PORT_ENV       = "GRPC_SERVER_PORT"
+	GRPC_COURT_CLIENT_HOST_ENV = "GRPC_COURT_CLIENT_HOST"
+	GRPC_COURT_CLIENT_PORT_ENV = "GRPC_COURT_CLIENT_PORT"
+	GRPC_USER_CLIENT_HOST_ENV  = "GRPC_USER_CLIENT_HOST"
+	GRPC_USER_CLIENT_PORT_ENV  = "GRPC_USER_CLIENT_PORT"
+	HTTP_SERVER_HOST_ENV       = "HTTP_SERVER_HOST"
+	HTTP_SERVER_PORT_ENV       = "HTTP_SERVER_PORT"
 )
 
 var (
-	dbClient              *bun.DB
-	sessionCLient         *redis.Client
-	err                   error
-	ctx                   = context.Background()
-	messageQueueProducer  sarama.SyncProducer
-	httpRouter            *mux.Router
-	gRPCServerPort, _     = strconv.Atoi(common.GetEnv(GRPC_SERVER_PORT_ENV, "50005"))
-	gRPCUserClientHost    = common.GetEnv(GRPC_USER_CLIENT_HOST_ENV, "localhost")
-	gRPCUserClientPort, _ = strconv.Atoi(common.GetEnv(GRPC_USER_CLIENT_PORT_ENV, "50011"))
-	httpServerHost        = common.GetEnv(HTTP_SERVER_HOST_ENV, "localhost")
-	httpServerPort, _     = strconv.Atoi(common.GetEnv(HTTP_SERVER_PORT_ENV, "50004"))
-	gRPCUserClient        proto.UserClient
+	dbClient               *bun.DB
+	sessionCLient          *redis.Client
+	err                    error
+	ctx                    = context.Background()
+	messageQueueProducer   sarama.SyncProducer
+	httpRouter             *mux.Router
+	gRPCServerPort, _      = strconv.Atoi(common.GetEnv(GRPC_SERVER_PORT_ENV, "50005"))
+	gRPCUserClientHost     = common.GetEnv(GRPC_USER_CLIENT_HOST_ENV, "localhost")
+	gRPCUserClientPort, _  = strconv.Atoi(common.GetEnv(GRPC_USER_CLIENT_PORT_ENV, "50011"))
+	gRPCCourtClientHost    = common.GetEnv(GRPC_COURT_CLIENT_HOST_ENV, "localhost")
+	gRPCCourtClientPort, _ = strconv.Atoi(common.GetEnv(GRPC_COURT_CLIENT_PORT_ENV, "50011"))
+	httpServerHost         = common.GetEnv(HTTP_SERVER_HOST_ENV, "localhost")
+	httpServerPort, _      = strconv.Atoi(common.GetEnv(HTTP_SERVER_PORT_ENV, "50004"))
+	gRPCEventsClient       proto.EventsClient
+	gRPCCourtClient        proto.CourtClient
+	gRPCUserClient         proto.UserClient
 )
 
 func initializeDB() error {
@@ -84,7 +91,7 @@ func initializeGRPCServer() error {
 	}
 	// Instantiate the server
 	s := grpc.NewServer()
-	proto.RegisterUserServer(s, &userGRPCService{})
+	proto.RegisterEventsServer(s, &eventsGRPCService{})
 	logrus.Infof("grpc server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		return fmt.Errorf("exception while starting grpc server. %v", err)
@@ -95,6 +102,17 @@ func initializeGRPCServer() error {
 func initializeGRPCUserClient() error {
 	var conn *grpc.ClientConn
 	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", gRPCUserClientHost, gRPCUserClientPort), grpc.WithInsecure())
+	if err != nil {
+		return fmt.Errorf("exception while initializing grpc client. %v", err)
+	}
+
+	gRPCUserClient = proto.NewUserClient(conn)
+	return nil
+}
+
+func initializeGRPCCourtClient() error {
+	var conn *grpc.ClientConn
+	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", gRPCCourtClientHost, gRPCCourtClientPort), grpc.WithInsecure())
 	if err != nil {
 		return fmt.Errorf("exception while initializing grpc client. %v", err)
 	}
@@ -118,6 +136,9 @@ func initialize() error {
 		return fmt.Errorf("http router initialization error. %v", err)
 	}
 	if err := initializeGRPCUserClient(); err != nil {
+		return fmt.Errorf("gRPC client initialization error. %v", err)
+	}
+	if err := initializeGRPCCourtClient(); err != nil {
 		return fmt.Errorf("gRPC client initialization error. %v", err)
 	}
 
