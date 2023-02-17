@@ -1,6 +1,11 @@
 # PressAndPlay
 A web application to book slot in nearby sporting centers
 
+## Team mates:
+Adarsh Srinivasan - @adarshsrinivasan
+
+Prashanth Vamanan - @prashanthvamanan
+
 ## Goal:
 We built an application with which a user can search for and book a court for various sports in public sporting centers across the city. The application will have 2 interfaces to interact, one for the user and another for the sporting center manager. When a user books a court, the respective sporting center manager will be notified and can approve or reject the appointment. Customers can provide feedback/ratings after the scheduled appointment, which will be used to order sporting courts on the catalog.
 
