@@ -3,7 +3,7 @@ A web application to book slot in nearby sporting centers
 
 ## Team mates:
 Adarsh Srinivasan - @adarshsrinivasan
-
+Varsha Natarajan - @ii-varsha-ii
 Prashanth Vamanan - @prashanthvamanan
 
 ## Goal:
